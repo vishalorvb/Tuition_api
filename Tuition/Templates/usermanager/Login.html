@@ -1,0 +1,42 @@
+{% extends "../Home/index.html" %}
+{% block title %}Login{% endblock title %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}">
+<div class="header">
+    <h1 style="font-size: 36px;">&#8220;Discover Limitless Learning Opportunities &#8221; </h1>
+    <p style="font-size: 20px; margin-top: 10px;"> Empower your education journey with our platform that seamlessly
+        connects students and teachers. Explore freelance teaching opportunities, post tuition listings for free,
+        and enjoy complimentary demo classes.</p>
+</div>
+
+<div class="registration-container">
+    <div class="registration-left">
+        <div class="features">
+            <h1><span class="features-heading">Welcome Back!</span></h1>
+            <ul>
+                <li>&#x27A9; Find Freelancing Teacher Jobs</li>
+                <li>&#x27A9; Post Tuitions for Free</li>
+                <li>&#x27A9; Get 3 Free Demo Classes</li>
+                <li>&#x27A9; Discover Qualified and Verified Teachers</li>
+                
+            </ul>
+        </div>
+    </div>
+    <div class="registration-right">
+        <div class="registration-form">
+            <h2>Login To Your Account</h2>
+            <form  action="{% url 'usermanager:login_page' %}" method="post">
+                {% csrf_token %}
+                <label for="phoneNumber">Phone Number</label>
+                <input type="text" name="phone_number" required pattern="[0-9]{10,}" title="Please enter a valid 10-digit phone number">
+                <p style="color: red;">{{error}}</p>
+                <button type="submit">Get OTP</button>
+                <p>Not registered yet? <a href="{% url 'usermanager:registration' %}">Register here</a></p>
+        </div>
+        </form>
+    </div>
+</div>
+</div>
+
+{% endblock content %}

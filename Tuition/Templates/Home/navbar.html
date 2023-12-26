@@ -1,0 +1,31 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/navbar.css' %}">
+<div class="navbar">
+    <div class="navbar-logo">
+      <a href="/"><img src="{% static 'images/logo.png' %}" alt="Logo"></a>
+    </div>
+    <ul class="navbar-menu" id="menu">
+      <li><a href="{% url 'payment:payment' %}">Buy Credits</a></li>
+      <li><a href="{% url 'teacher:teacher_page1' %}">Become Teacher</a></li>
+      <li><a href="{% url 'teacher:view_teacher' %}">Find Teacher</a></li>
+       <li><a href="{% url 'tuition:view_tuitions' %}">Find Tuition</a> </li>
+       <li><a href="{% url 'tuition:post_tuition_page1' %}" id="post-tuition"> Post Tuition </a> </li>
+
+      {% if request.user.is_authenticated %}
+      <li><a href="{% url 'Home:profile' %}">Profile</a></li>
+      <li><a href="{% url 'usermanager:logout' %}">Logout</a></li>
+      {% else %}
+      <li><a href="{% url 'usermanager:registration' %}">Register</a></li>
+      <li><a href="{% url 'usermanager:login_page' %}">Login</a></li>
+      {% endif %}
+    </ul>
+    <div class="navbar-toggle" onclick="toggleMenu()">
+      &#9776; 
+    </div>
+  </div>
+  <script>
+    function toggleMenu() {
+      var menu = document.getElementById("menu");
+      menu.classList.toggle("active");
+    }
+  </script>

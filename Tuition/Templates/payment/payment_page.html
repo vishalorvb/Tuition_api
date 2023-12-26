@@ -1,0 +1,88 @@
+{% extends "../Home/index.html" %}
+{% block title %}Buy Points{% endblock title %}
+{% block content %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    function getDetails(plan) {
+        console.log(plan)
+        fetch("/payment/orderdetails?plan=" + plan)
+            .then((response) => response.json())
+            .then(context => {
+                console.table(context)
+                if (context.name == "none") {
+                    console.log("name is none")
+                    window.location.href = "/usermanager/login";
+                }
+                else {
+                    let rzp1 = new Razorpay(context)
+                    rzp1.open()
+                }
+            });
+    }
+
+</script>
+<div>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/payment.css' %}">
+    <div style="text-align: center;padding: 10px;">
+        <h2>Every Unlock cost 1 Credit</h2>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card">
+                <h1><b> Silver </b></h1>
+                <h4><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                        class="bi bi-bookmark-star-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5zM8.16 4.1a.178.178 0 0 0-.32 0l-.634 1.285a.178.178 0 0 1-.134.098l-1.42.206a.178.178 0 0 0-.098.303L6.58 6.993c.042.041.061.1.051.158L6.39 8.565a.178.178 0 0 0 .258.187l1.27-.668a.178.178 0 0 1 .165 0l1.27.668a.178.178 0 0 0 .257-.187L9.368 7.15a.178.178 0 0 1 .05-.158l1.028-1.001a.178.178 0 0 0-.098-.303l-1.42-.206a.178.178 0 0 1-.134-.098L8.16 4.1z" />
+                    </svg> {{silver.credit}} Credit</h4>
+                    <div style="text-align: left; padding: 20px;">
+                    <h4><span style='font-size:30px;'>&#10004;</span>No commision on Tuition Fee</h4>
+                    <h4><span style='font-size:30px;'>&#10004;</span>Contact Student Directly</h4>
+                    <h4><span style='font-size:30px;'>&#10004;</span>Life Time validity</h4>
+                    <h4><span style='font-size:30px;'>&#10004;</span>Full Refund If not find any lead in 6 months</h4>
+                </div>
+                <button onclick="getDetails(1)" class="submitbutton">
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            class="bi bi-currency-rupee" viewBox="0 0 16 16">
+                            <path
+                                d="M4 3.06h2.726c1.22 0 2.12.575 2.325 1.724H4v1.051h5.051C8.855 7.001 8 7.558 6.788 7.558H4v1.317L8.437 14h2.11L6.095 8.884h.855c2.316-.018 3.465-1.476 3.688-3.049H12V4.784h-1.345c-.08-.778-.357-1.335-.793-1.732H12V2H4v1.06Z" />
+                        </svg>
+                        {{silver.price}}
+                    </h4>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <h1><b> Gold </b></h1>
+                <!-- <h4><span style='font-size:30px;'>&#10004;</span> {{gold.credit}} Credit</h4> -->
+                <h4><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                    class="bi bi-bookmark-star-fill" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5zM8.16 4.1a.178.178 0 0 0-.32 0l-.634 1.285a.178.178 0 0 1-.134.098l-1.42.206a.178.178 0 0 0-.098.303L6.58 6.993c.042.041.061.1.051.158L6.39 8.565a.178.178 0 0 0 .258.187l1.27-.668a.178.178 0 0 1 .165 0l1.27.668a.178.178 0 0 0 .257-.187L9.368 7.15a.178.178 0 0 1 .05-.158l1.028-1.001a.178.178 0 0 0-.098-.303l-1.42-.206a.178.178 0 0 1-.134-.098L8.16 4.1z" />
+                </svg> {{gold.credit}} Credit</h4>
+                <div style="text-align: left; padding: 20px;">
+                <h4><span style='font-size:30px;'>&#10004;</span>No commision on Tuition Fee</h4>
+                <h4><span style='font-size:30px;'>&#10004;</span>Contact Student Directly</h4>
+                <h4><span style='font-size:30px;'>&#10004;</span>Life Time validity</h4>
+                <h4><span style='font-size:30px;'>&#10004;</span>Full Refund If not find any lead in 6 months</h4>
+            </div>
+                <!-- <button onclick="getDetails(2)" class="submitbutton">{{gold.price}}</button> -->
+                <button onclick="getDetails(2)" class="submitbutton">
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            class="bi bi-currency-rupee" viewBox="0 0 16 16">
+                            <path
+                                d="M4 3.06h2.726c1.22 0 2.12.575 2.325 1.724H4v1.051h5.051C8.855 7.001 8 7.558 6.788 7.558H4v1.317L8.437 14h2.11L6.095 8.884h.855c2.316-.018 3.465-1.476 3.688-3.049H12V4.784h-1.345c-.08-.778-.357-1.335-.793-1.732H12V2H4v1.06Z" />
+                        </svg>
+                        {{gold.price}}
+                    </h4>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock content %}

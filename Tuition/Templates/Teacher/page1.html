@@ -1,0 +1,117 @@
+
+
+{% extends "../Home/index.html" %}
+{% block title %}Teacher{% endblock title %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}">
+    {% comment %} <div class="formcontainer">
+        <form onsubmit="return validateForm(['teacher_name','teacher_subject','teacher_class','teacher_mode'],'error')" action="{% url 'teacher:teacher_page1' %}" method="post">
+            {% csrf_token %}
+            <div class="row justify-content-center">
+                <div class="col-md-5 forms">
+                    <div>
+                        <label for=""> Name</label>
+                        <input type="text" name="teacher_name" class="midinput">
+                        <label for="">Subject</label>
+                        <input type="text" name="teacher_subject" class="midinput">
+                        <label for="">Class</label>
+                        <input type="text" name="teacher_class" class="midinput">
+
+                        <br>
+
+                        <label for="">Mode Of Teaching :</label><br>
+                        <label for="">Online</label>
+                        <input type="radio" class="form-check-input" value='online' name="teacher_mode">
+                        <label for="">Offline</label>
+                        <input type="radio" class="form-check-input" value='offline' name="teacher_mode">
+                        <label for="">Both</label>
+                        <input type="radio" class="form-check-input" value='both' name="teacher_mode">
+
+
+                        <div class="row justify-content-around">
+                            <div class="col-lg-12">
+                                <input type="submit" class="submitbutton" value="Become Teacher">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div> {% endcomment %}
+
+
+    <div class="header">
+        <h1 style="font-size: 36px;">&#8220;Start Your Tutoring Journey! &#8221; </h1>
+        <p style="font-size: 20px; margin-top: 10px;"> Embark on a fulfilling tutoring journey by posting your tuition. Your knowledge is in demand  help students thrive.</p>
+    </div>
+    
+    <div class="registration-container">
+        <div class="registration-left">
+            <div class="features">
+                <h1><span class="features-heading">Empower students with your knowledge. </span></h1>
+                <div class="progress-container">
+                    <div class="step-wrapper">
+                        <div class="step "> 1</div>
+                        <div class="Text">
+                            <h2 class="step-text">Register as a Teacher</h2>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                    <div class="step-wrapper">
+                        <div class="step">2</div>
+                        <div class="Text">
+                            <h2 class="step-text">Offer Free Demo Classes</h2>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                    <div class="step-wrapper">
+                        <div class="step">3</div>
+                        <div class="Text">
+                            <h2 class="step-text">Schedule Tuition Sessions</h2>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                    <div class="step-wrapper">
+                        <div class="step">4</div>
+                        <div class="Text">
+                            <h2 class="step-text">Provide Excellent Service</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="registration-right">
+            <div class="registration-form">
+                <h2>Become Teacher</h2>
+                <form  action="{% url 'teacher:teacher_page1' %}" method="post">
+                    {% csrf_token %}
+                    <label for=""> Name</label>
+                    <input type="text" name="teacher_name" required >
+    
+                    <label for="phoneNumber">Subject</label>
+                    <input type="text" name="teacher_subject" required >
+                    
+                    <label for="">Class</label>
+                    <input type="text" name="teacher_class" required >
+    
+                  
+                    <label for="">Mode Of Teaching :</label>
+                    <label for="">Online</label>
+                    <input type="radio"  value='online' name="teacher_mode">
+                    <label for="">Offline</label>
+                    <input type="radio" value='offline' name="teacher_mode"> 
+                    <label for="">Both</label>
+                    <input type="radio"  value='both' name="teacher_mode"> 
+                    <p style="color: red;">{{error}}</p>
+                    <button type="submit">Become Teacher</button>
+            </div>
+            </form>
+        </div>
+        
+    </div>
+    
+    </div>
+    {% endblock content %}

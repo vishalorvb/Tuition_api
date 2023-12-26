@@ -1,0 +1,124 @@
+
+{% extends "../Home/index.html" %}
+
+{% block title %}Teacher{% endblock title %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}">
+{% comment %} <div class="allcontent">
+    <form action="{% url 'teacher:teacher_profile' %}" method="post">
+        {% csrf_token %}
+        <div class="row justify-content-around">
+            <div class="col-md-5 forms">
+                <div>
+                    <label for="">Name</label>
+                    <input type="text" value={{Teacher.Name}} name="name" class="midinput">
+
+                    <label for="">Experience</label>
+                    <input type="number" value={{Teacher.Experience}} name="experience" class="midinput">
+
+                    <label for="">Locality</label>
+                    <input type="text" value={{Teacher.Location}} name="locality" class="midinput">
+
+                    <label for="">Qualification</label>
+                    <input type="text" value={{Teacher.Qualification}} name="qualification" class="midinput">
+
+                    <label for="">Subject</label>
+                    <input type="text" value={{Teacher.Subject}} name="subject" class="midinput">
+
+
+                    <label for="">Standard</label>
+                    <input type="text" value={{Teacher.classes}} name="classes" class="midinput">
+
+                    <label for="">Pincode</label>
+                    <input type="text" value={{Teacher.Pincode}} name="pincode" class="midinput">
+
+                    <label for="">Teaching Mode :</label>
+                    <label for="">Online</label>
+                    <input type="radio" class="form-check-input" checked value='online' name="mode">
+                    <label for="">Offline</label>
+                    <input type="radio" class="form-check-input" value='offline' name="mode">
+                    <label for="">Both</label>
+                    <input type="radio" class="form-check-input" value='both' name="mode">
+                    <br>
+
+                    <label for="">Age</label>
+                    <input type="number" value={{Teacher.Age}} name="age" class="midinput">
+
+                    <label for="">Fee</label>
+                    <input type="number" value={{Teacher.Fee}} name="fee" class="midinput">
+
+                    <label for="">About</label>
+                    <textarea class="form-control" name="about" rows="3">{{Teacher.About}}</textarea>
+
+                    <div class="row justify-content-around">
+                        <div class="col-lg-11">
+                            <input type="submit" class="submitbutton" value="Update">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div> {% endcomment %}
+
+
+<div class="header">
+    <h1 style="font-size: 36px;">&#8220;Your Expertise Matters! &#8221; </h1>
+    <p style="font-size: 20px; margin-top: 10px;"> Your expertise is unique and valuable. Share it with students who are eager to learn and benefit from your insights.</p>
+</div>
+
+<div class="registration-container">
+    <div class="registration-right">
+        <div class="registration-form">
+            <h2>Update Profile</h2>
+            <form  action="{% url 'teacher:teacher_profile' %}" method="post">
+                {% csrf_token %}
+                <label for="">Name</label>
+                <input type="text" value="{{Teacher.Name}}" name="name" required>
+
+                <label for="">Experience</label>
+                <input type="number" value={{Teacher.Experience}} name="experience" required>
+
+                <label for="">Locality</label>
+                <input type="text" value="{{Teacher.Location}}" name="locality" required>
+
+                <label for="">Qualification</label>
+                <input type="text" value="{{Teacher.Qualification}}" name="qualification" required>
+
+                <label for="">Subject</label>
+                <input type="text" value="{{Teacher.Subject}}" name="subject" required>
+
+
+                <label for="">Standard</label>
+                <input type="text" value={{Teacher.classes}} name="classes" required>
+
+                <label for="">Pincode</label>
+                <input type="text" value={{Teacher.Pincode}} name="pincode" required pattern="[0-9]{6,}" title="Please enter a valid pincode">
+
+                <label for="">Teaching Mode :</label>
+                <label for="">Online</label>
+                <input type="radio"  checked value='online' name="mode">
+                <label for="">Offline</label>
+                <input type="radio"  value='offline' name="mode">
+                <label for="">Both</label>
+                <input type="radio"  value='both' name="mode">
+                <br>
+
+                <label for="">Age</label>
+                <input type="number" value={{Teacher.Age}} name="age" required>
+
+                <label for="">Fee</label>
+                <input type="number" value={{Teacher.Fee}} name="fee" required>
+
+                <label for="">About</label>
+                <textarea class="form-control" required name="about" rows="3">{{Teacher.About}}</textarea>
+
+                <p style="color: red;">{{error}}</p>
+                <button type="submit">Submit</button>
+        </div>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock content %}

@@ -1,0 +1,138 @@
+{% extends "../Home/index.html" %}
+
+{% block title %}Tuition{% endblock title %}
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}">
+{% comment %} <div class="formcontainer">
+    <form
+    onsubmit="return validateForm(['student_name','student_phone_number','course','subject','mode','fee','description'],'error')"
+    action="{% url 'tuition:post_tuition_page1' %}" method="post">
+        {% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-md-5 forms">
+                <div>
+                    <label for="">Student Name</label>
+                    <input type="text" name="student_name" class="midinput">
+                    <label for="">Phone Number</label>
+                    <input type="text" name="student_phone_number" class="midinput">
+                    <label for="">Courses</label>
+                    <input type="text" name="course" class="midinput">
+                    <label for="">Subject</label>
+                    <input type="text" name="subject" class="midinput">
+                    <br>
+
+                    <label for="">Mode Of Study :</label>
+                    <label for="">Online</label>
+                    <input type="radio" class="form-check-input" value='online' name="mode">
+                    <label for="">Offline</label>
+                    <input type="radio" class="form-check-input" value='offline' name="mode"> <br>
+                    <label for="">Both</label>
+                    <input type="radio" class="form-check-input" value='both' name="mode"> <br>
+
+                    <br>
+                    <label for="">Fee: (per hour)</label>
+                    <input type="text" class="midinput" name="fee">
+                    <br>
+                    <label for="">Description</label>
+                    <textarea class="form-control" name="description" rows="3"></textarea>
+                    <br/>
+                    <div class="row justify-content-around">
+                        <div class="col-lg-12">
+                            <input type="submit" class="submitbutton" value="Get Free Demo Class">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div> {% endcomment %}
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}">
+<div class="header">
+    <h1 style="font-size: 36px;">&#8220;Post Your Tuition &#8221; </h1>
+    <p style="font-size: 20px; margin-top: 10px;"> Empower your education journey with our platform that seamlessly
+        connects students and teachers. Explore freelance teaching opportunities, post tuition listings for free,
+        and enjoy complimentary demo classes.</p>
+</div>
+
+<div class="registration-container">
+    <div class="registration-left">
+        <div class="features">
+            <h1><span class="features-heading">Post Your Need in 3 Simple Steps</span></h1>
+            <div class="progress-container">
+                <div class="step-wrapper">
+                    <div class="step "> 1</div>
+                    <div class="Text">
+                        <h2 class="step-text">Post Your Tuition</h2>
+                    </div>
+                </div>
+                <div class="line"></div>
+                <div class="step-wrapper">
+                    <div class="step">2</div>
+                    <div class="Text">
+                        <h2 class="step-text">Get FREE Demo Class</h2>
+                    </div>
+                </div>
+                <div class="line"></div>
+                <div class="step-wrapper">
+                    <div class="step">3</div>
+                    <div class="Text">
+                        <h2 class="step-text">Confirm If You Like</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="feature">
+            <h2>Key Features:</h2>
+            <ul>
+                <li>Access a wide range of skilled and experienced teachers</li>
+                <li>Explore different teaching styles through free demo classes</li>
+                <li>Choose teachers that match your learning preferences</li>
+                <li>Flexible scheduling to fit your busy routine</li>
+                <li>Verified and genuine teachers for a quality learning experience</li>
+            </ul>
+        </div>
+    </div>
+    <div class="registration-right">
+        <div class="registration-form">
+            <h2>Post Tuition</h2>
+            <form  action="{% url 'tuition:post_tuition_page1' %}" method="post">
+                {% csrf_token %}
+                <label for="">Student Name</label>
+                <input type="text" name="student_name" required >
+
+                <label for="phoneNumber">Phone Number</label>
+                <input type="text" name="student_phone_number" required pattern="[0-9]{10,}" title="Please enter a valid 10-digit phone number">
+                
+                <label for="">Courses</label>
+                <input type="text" name="course" required >
+
+                <label for="">Subject</label>
+                <input type="text" name="subject" required>
+                <label for="">Mode Of Study :</label>
+                <label for="">Online</label>
+                <input type="radio"  value='online' name="mode">
+                <label for="">Offline</label>
+                <input type="radio" value='offline' name="mode"> 
+                <label for="">Both</label>
+                <input type="radio"  value='both' name="mode"> 
+
+                    <label for="">Fee: (per hour)</label>
+                    <input type="text" required name="fee">
+                  
+                    <label for="">Description</label>
+                    <textarea class="form-control" name="description" rows="3"></textarea>
+                <p style="color: red;">{{error}}</p>
+                <button type="submit">Get Free Demo</button>
+        </div>
+        </form>
+    </div>
+    
+</div>
+
+</div>
+{% endblock content %}

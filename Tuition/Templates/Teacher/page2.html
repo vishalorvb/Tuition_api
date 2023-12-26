@@ -1,0 +1,85 @@
+{% extends "../Home/index.html" %}
+
+{% block title %}Teacher{% endblock title %}
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}">
+{% comment %} <div class="formcontainer">
+    <form onsubmit="return validateForm(['location','qualification','experience','age','fee','pincode','about','gender'],'error')" action="{% url 'teacher:teacher_page2' %}" method="post">
+        {% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-md-5 forms">
+                <div>
+                    <label for="">Location</label>
+                    <input type="text" name="location" class="midinput">
+                    <label for="">Qualification</label>
+                    <input type="text" name="qualification" class="midinput">
+                    <label for="">Experience</label>
+                    <input type="number" name="experience" class="midinput">
+                    <label for="">Age</label>
+                    <input type="number" name="age" class="midinput">
+                    <label for="">Fee</label>
+                    <input type="number" name="fee" class="midinput">
+                    <label for="">Pincode</label>
+                    <input type="number" name="pincode" class="midinput">
+                    <label for="">About</label>
+                    <textarea class="form-control" name="about" rows="3"></textarea>
+                    <br>
+
+                    <label for="">Gender :</label>
+                    <label for="">Male</label>
+                    <input type="radio" class="form-check-input" value='Male' name="gender">
+                    <label for="">Female</label>
+                    <input type="radio" class="form-check-input" value='Female' name="gender"> <br>
+                    <div class="row justify-content-around">
+                        <div class="col-lg-12">
+                            <input type="submit" class="submitbutton" value="Final submit">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div> {% endcomment %}
+
+
+<div class="header">
+    <h1 style="font-size: 36px;">&#8220;Your Expertise Matters! &#8221; </h1>
+    <p style="font-size: 20px; margin-top: 10px;"> Your expertise is unique and valuable. Share it with students who are eager to learn and benefit from your insights.</p>
+</div>
+
+<div class="registration-container">
+    <div class="registration-right">
+        <div class="registration-form">
+            <h2>Become Teacher</h2>
+            <form  action="{% url 'teacher:teacher_page2' %}" method="post">
+                {% csrf_token %}
+                <label for="">Location</label>
+                <input type="text" name="location"  required >
+                <label for="">Qualification</label>
+                <input type="text" name="qualification"  required >
+                <label for="">Experience</label>
+                <input type="number" name="experience"  required >
+                <label for="">Age</label>
+                <input type="number" name="age" required pattern="[0-9]{2,}" title="Please enter a valid input">
+                <label for="">Fee</label>
+                <input type="number" name="fee"  required pattern="[0-9]{10,}" title="Please enter a valid input">
+                <label for="">Pincode</label>
+                <input type="number" name="pincode"  required pattern="[0-9]{6,}" title="Please enter a valid pincode">
+                <label for="">About</label>
+                <textarea class="form-control" name="about" rows="3" required ></textarea>
+                <br>
+                <label for="">Gender :</label>
+                <label for="">Male</label>
+                <input type="radio"  value='Male' name="gender">
+                <label for="">Female</label>
+                <input type="radio"  value='Female' name="gender"> <br>
+                <p style="color: red;">{{error}}</p>
+                <button type="submit">Update</button>
+        </div>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock content %}
