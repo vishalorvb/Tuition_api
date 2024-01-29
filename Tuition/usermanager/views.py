@@ -52,7 +52,7 @@ def sendOtp(request):
             message = "OTP sent successfully."
             return Response({"message": message}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": "Failed to send OTP."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Invalid phone number."}, status=status.HTTP_400_BAD_REQUEST)
     except Exception:
             logging.exception("Registration post request")
             return Response({"message": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
@@ -78,7 +78,7 @@ def login(request):
         }
         return Response(response_data, status=status.HTTP_200_OK)
     else:
-        return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
     
 
 
