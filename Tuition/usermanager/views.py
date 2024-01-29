@@ -28,11 +28,12 @@ def createUser(request):
         full_name = request.data['full_name']
         email = request.data['email']
         phone_number = request.data['phone_number']
-        if saveUser(full_name, email, phone_number):
+        res = saveUser(full_name, email, phone_number)
+        if res == False:
             message = "User created successfully."
             return Response({"message": message}, status=status.HTTP_201_CREATED)
         else:
-            return Response({"message": "Failed to create user."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": res}, status=status.HTTP_400_BAD_REQUEST)
     except Exception:
             logging.exception("Registration post request")
             return Response({"message": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
