@@ -4,11 +4,11 @@ from django.contrib.auth import authenticate
 import logging
 from .usermanagerBAL import *
 import urllib.parse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import CustomUser
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
                     filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
 
@@ -93,3 +93,23 @@ def verify_email(request, link):
     except Exception as e:
         logging.exception("Registration post request")
         return Response({"detail": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['POST'])
+@permission_classes([AllowAny])  
+def refreshToken(request):
+    refresh_token_value = request.data.get('refresh_token')
+
+    if not refresh_token_value:
+        return Response({'message': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        refresh_token = RefreshToken(refresh_token_value)
+        access_token = str(refresh_token.access_token)
+        response_data = {
+            'refresh': str(refresh_token),
+            'access': access_token,
+        }
+        return Response({'token': response_data}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': f'Invalid refresh token: {e}'}, status=status.HTTP_400_BAD_REQUEST)
