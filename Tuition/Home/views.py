@@ -79,13 +79,11 @@ def reSizeImage(input_image, output_size):
     )
     return resized_image
 
-
+@api_view(['GET'])
 def getPin(request):
     pin = request.GET["pincode"]
     matching_pincodes = getPincode(pin)
-    data_list = list(matching_pincodes)
-    json_data = json.dumps(data_list)
-    return HttpResponse(json_data, content_type="application/json")
+    return Response(matching_pincodes, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])
