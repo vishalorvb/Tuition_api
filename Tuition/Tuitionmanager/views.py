@@ -31,10 +31,11 @@ def createTuition(request):
         description = request.data['description']
         fee = request.data['fee']
         mode = request.data['mode']
-        pincode = request.data['pincode']
-        locality = request.data['locality']
+        pincode = 0 if request.data.get('pincode') == None else request.data.get('pincode')
+        locality = " " if request.data.get('locality') == None else request.data.get('locality')
         pin = isPincodeExists(pincode)
     except:
+        logging.exception("post tuition")
         return Response({"message": "Invalid Data format."}, status=status.HTTP_400_BAD_REQUEST)
     if pin == False:
         return Response({"message": "Invalid pincode."}, status=status.HTTP_400_BAD_REQUEST)

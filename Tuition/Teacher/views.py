@@ -37,7 +37,7 @@ def create_teacher(request):
         Teaching_mode = request.data['mode']
         Age = request.data['age']
         Fee = request.data['fee']
-        Pincode = request.data['pincode']
+        Pincode = 0 if  request.data.get('pincode') == None else request.data.get('pincode')
         pin = None if isPincode(Pincode)==False else isPincode(Pincode)
         
         teacher = save_teacher(Name=Name, Gender=Gender, Experience=Experience,
@@ -46,7 +46,7 @@ def create_teacher(request):
                                    Phone_number=request.user.phone_number,
                                    Age=Age, Fee=Fee, Pincode=pin)
         if teacher:
-            message = "Created successfully."
+            message = "Register as teacher succefully."
             return Response({"message": message}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message": "Failed to create."}, status=status.HTTP_400_BAD_REQUEST)
