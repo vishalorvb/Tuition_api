@@ -2,6 +2,7 @@ from .models import *
 import logging
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
+from Home.HomeDAL import getDistinctByPincode
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
                     filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
@@ -9,8 +10,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(leveln
 
 def addTuition(posted_date, user, student_name, phone_number, course, subject, description, teaching_mode, fee,  locality, pincode=None,):
     try:
-        new_tuition = Tuitions.objects.create(
-            posted_date=posted_date, user_id=user, student_name=student_name, phone_number=phone_number,course=course,subject=subject,description=description,teaching_mode=teaching_mode,fee=fee,pincode=pincode,locality=locality)
+        slug = getDistinctByPincode(pincode)
+        slug = slug + '-' + course.split()[0] + '-' + subject.split()[0] + '-' + locality.split()[0]
+        Tuitions.objects.create(
+            posted_date=posted_date, user_id=user, student_name=student_name, phone_number=phone_number,course=course,subject=subject,description=description,teaching_mode=teaching_mode,fee=fee,pincode=pincode,locality=locality,slug=slug)
         return True
     except Exception:
         logging.exception("add tuition in tuition DAL")

@@ -15,9 +15,12 @@ class Tuitions(models.Model):
     teaching_mode = models.CharField(max_length=10)
     fee = models.CharField(max_length=10, null=True, blank=True)
     pincode = models.ForeignKey(pincodes, on_delete=models.DO_NOTHING, default=None,null=True)
-    locality = models.CharField(max_length=60, null=True, blank=True)
+    locality = models.CharField(max_length=250, null=True, blank=True)
     unlocks = models.IntegerField(null=True, blank=True,default=0)
     verify = models.BooleanField(default=False)
+    slug = models.CharField(max_length=250, null=True, blank=True)
+
+
 
     def __str__(self):
         return self.student_name + self.phone_number
