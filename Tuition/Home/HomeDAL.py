@@ -21,12 +21,7 @@ def getLikePincode(pin):
     return val
 
     
-def getDistinctByPincode(pincode):
-    try:
-        district = pincodes.objects.get(Pincode=int(pincode)).District
-        return district
-    except ObjectDoesNotExist:
-        return "india"
+
 
 
   
