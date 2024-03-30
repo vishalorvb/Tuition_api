@@ -6,6 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
+from .serializer import TuitionsSerializer
+
 
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
@@ -83,6 +85,26 @@ def changeStatus(request):
         Response({"message": "Invalid Data."}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
+def getLatestTuition(request):
+    tuition =  get_latest_tuition()
+    data = TuitionsSerializer(tuition, many=True).data
+    return Response({"message": "Operation Successful.", "data": data}, status=status.HTTP_200_OK)
 
-def getTuition(request):
-    pass
+
+@api_view(['GET'])
+def get_tution_byId(request,tuitionId):
+    if request.user.is_authenticated:
+        t = getTution_withPhone(tuitionId)
+        if t is None:
+            return Response({"message": "No tuition found", "data": None}, status=status.HTTP_200_OK)
+        serializer = TuitionsSerializer(t)
+        serialized_data = serializer.data
+        return Response({"message": "Authenticated user.", "data": serialized_data}, status=status.HTTP_200_OK)
+    else:
+        t = getTuiton_withOutphone(tuitionId)
+        if t is None:
+            return Response({"message": "No tuition found", "data": None}, status=status.HTTP_200_OK)
+        data = TuitionsSerializer(t, many=True).data
+        return Response({"message": "Unauthenticated user.", "data": data}, status=status.HTTP_200_OK)
+

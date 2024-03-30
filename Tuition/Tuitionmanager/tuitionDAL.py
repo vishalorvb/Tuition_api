@@ -7,10 +7,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(leveln
                     filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
 
 
-def addTuition(posted_date, user, student_name, phone_number, course, subject, description, teaching_mode, fee,  locality, pincode=None,):
+
+#add new tuition in database
+def addTuition(posted_date, user, student_name, phone_number, course, subject, description, teaching_mode, fee,  locality,slug, pincode=None,):
     try:
-        slug = pincode.District
-        slug = slug + '-' + course.split()[0] + '-' + subject.split()[0] + '-' + locality.split()[0]
         Tuitions.objects.create(
             posted_date=posted_date, user_id=user, student_name=student_name, phone_number=phone_number,course=course,subject=subject,description=description,teaching_mode=teaching_mode,fee=fee,pincode=pincode,locality=locality,slug=slug)
         return True
@@ -20,11 +20,26 @@ def addTuition(posted_date, user, student_name, phone_number, course, subject, d
 
 def getLatestTuition():
     try:  
-        t = Tuitions.objects.filter(status = True).order_by('-posted_date')[:10]
+        t =  Tuitions.objects.filter(status=True).order_by('-posted_date','-id').values('posted_date', 'student_name', 'course','id','subject','description','unlocks')[:10]
         return t
     except Exception:
         logging.exception("getlatestTuition")
         return False
+    
+
+def getDetails(tuitionId):
+    try:
+        t = Tuitions.objects.get(id=tuitionId)
+        return t
+    except ObjectDoesNotExist:
+        return None
+    
+def getDetails_withoutPhone(tuitionId):
+        try:
+            t = Tuitions.objects.filter(id=tuitionId).values('posted_date', 'student_name', 'course','id','subject','description','slug','fee','locality','unlocks')
+            return t
+        except ObjectDoesNotExist:
+             return None
         
 def getAllTuition():
     try:
