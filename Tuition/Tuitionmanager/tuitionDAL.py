@@ -36,7 +36,7 @@ def getDetails(tuitionId):
     
 def getDetails_withoutPhone(tuitionId):
         try:
-            t = Tuitions.objects.filter(id=tuitionId).values('posted_date', 'student_name', 'course','id','subject','description','slug','fee','locality','unlocks')
+            t = Tuitions.objects.filter(id=tuitionId)
             return t
         except ObjectDoesNotExist:
              return None

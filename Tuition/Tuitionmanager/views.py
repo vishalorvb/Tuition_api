@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .serializer import TuitionsSerializer
+from .serializer import TuitionsSerializer,TuitionsSerializer_withPhone
 
 
 import logging
@@ -105,6 +105,6 @@ def get_tution_byId(request,tuitionId):
         t = getTuiton_withOutphone(tuitionId)
         if t is None:
             return Response({"message": "No tuition found", "data": None}, status=status.HTTP_200_OK)
-        data = TuitionsSerializer(t, many=True).data
+        data = TuitionsSerializer_withPhone(t, many=True).data
         return Response({"message": "Unauthenticated user.", "data": data}, status=status.HTTP_200_OK)
 
