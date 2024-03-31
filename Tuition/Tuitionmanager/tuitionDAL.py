@@ -85,6 +85,10 @@ def searchTuition(query_words):
         combined_condition |= Q(subject__icontains=word)
         combined_condition |= Q(locality__icontains=word)
         combined_condition |= Q(slug__icontains=word)
+
+
+        combined_condition |= Q(pincode__District__contains=word)
+        combined_condition |= Q(pincode__Devision__contains=word)
     tuitions = Tuitions.objects.filter(combined_condition)
     return tuitions
 
