@@ -34,21 +34,9 @@ def getDetails(tuitionId):
     except ObjectDoesNotExist:
         return None
     
-def getDetails_withoutPhone(tuitionId):
-        try:
-            t = Tuitions.objects.filter(id=tuitionId)
-            return t
-        except ObjectDoesNotExist:
-             return None
+
         
-def getAllTuition():
-    try:
-        t = Tuitions.objects.filter(status = True).order_by('-posted_date')[:100]
-        return t
-    except Exception:
-        logging.exception("getlatestTuition")   
-        return False
-        
+
 def IsTuitionIdExist(id):
     try:
         t = Tuitions.objects.get(id = id)
@@ -63,11 +51,13 @@ def unlockTuition(user,tuition):
     except Exception:
         return False
         
+
+
+
+# This will return True if user(userId) already unlocked the tuition (tuitionId)
 def IstuitionUserExist(userid,tutid):
     try:
         Tuition_unlock.objects.get(User_id=userid,Tuition_id = tutid)
-        logging.info("Tuition already unlocked by user")
-        logging.exception(" ") 
         return True
     except ObjectDoesNotExist:
         logging.info("Tuition Not belongs to user")
@@ -75,6 +65,17 @@ def IstuitionUserExist(userid,tutid):
     except MultipleObjectsReturned:
         logging.info("Tuition Not belongs multiple times to user")
         return True
+    
+
+# this will return True if tuition belogs to user, means the given tuition(tuitionId) is posted by user(userId) 
+def IsTuitionBelongsToUser(userid,tuitionid):
+    try:
+        Tuitions.objects.get(id=tuitionid,user_id=userid)
+        return True
+    except ObjectDoesNotExist:
+        logging.exception(" ")
+        return False
+                 
     
 def changeStatus(tutionid):
     try:
@@ -92,14 +93,7 @@ def changeStatus(tutionid):
         logging.exception(" ")
         return False
     
-def IsTuitionBelongsToUser(userid,tuitionid):
-    try:
-        Tuitions.objects.filter(id=tuitionid,user_id=userid)
-        return True
-    except Exception:
-        logging.exception(" ")
-        return False
-                 
+
 def MyTuition(userid):
     try:
         return Tuitions.objects.filter(user_id=userid)                             

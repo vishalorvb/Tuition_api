@@ -94,17 +94,18 @@ def getLatestTuition(request):
 
 @api_view(['GET'])
 def get_tution_byId(request,tuitionId):
-    if request.user.is_authenticated:
-        t = getTution_withPhone(tuitionId)
-        if t is None:
-            return Response({"message": "No tuition found", "data": None}, status=status.HTTP_200_OK)
-        serializer = TuitionsSerializer(t)
-        serialized_data = serializer.data
-        return Response({"message": "Authenticated user.", "data": serialized_data}, status=status.HTTP_200_OK)
-    else:
-        t = getTuiton_withOutphone(tuitionId)
-        if t is None:
-            return Response({"message": "No tuition found", "data": None}, status=status.HTTP_200_OK)
-        data = TuitionsSerializer_withPhone(t, many=True).data
-        return Response({"message": "Unauthenticated user.", "data": data}, status=status.HTTP_200_OK)
+    #geeting tuition by tuiionId
+    tuition  = getTution_deatils(tuitionId)
+
+    #return none if no tuition found of given tuitionId
+    if tuition is None:
+        return Response({"message": "No tuition found", "data": None}, status=status.HTTP_200_OK)
+    
+
+
+    if request.user.is_authenticated and canPhoneNumber(tuition.id, request.user.id):
+        return Response({"message": "Authenticated user.", "data": TuitionsSerializer(tuition).data}, status=status.HTTP_200_OK)
+
+    return  Response({"message": "Authenticated user.", "data": TuitionsSerializer_withPhone(tuition).data}, status=status.HTTP_200_OK)
+
 

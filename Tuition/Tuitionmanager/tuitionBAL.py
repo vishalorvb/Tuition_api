@@ -21,17 +21,19 @@ def get_latest_tuition():
     return getLatestTuition()
 
 
-# return all details with phone number
-def getTuiton_withOutphone(tuitionId):
-    return getDetails_withoutPhone(tuitionId)
 
 
-#return all detail with phone number
-def getTution_withPhone(tuitionId):
+
+#return all detail of a tution with given tutitionId
+def getTution_deatils(tuitionId):
     return getDetails(tuitionId)
 
-def get_all_tuition():
-    return getAllTuition()
+
+#this will return true  if tuitionId posted by userId, or userId already unlocked this tuitionId, false otherwise
+def canPhoneNumber(tuitionId,userId):
+    if IstuitionUserExist(userId,tuitionId) or IsTuitionBelongsToUser(userId,tuitionId):
+       return True
+    return False
 
 def unlock_tuitions(user,tutionId):
     tution = is_tutionid_exists(tutionId)
