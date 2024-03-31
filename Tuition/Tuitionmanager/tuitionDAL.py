@@ -2,6 +2,7 @@ from .models import *
 import logging
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
+from django.db.models import Q
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
                     filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
@@ -75,8 +76,22 @@ def IsTuitionBelongsToUser(userid,tuitionid):
     except ObjectDoesNotExist:
         logging.exception(" ")
         return False
-                 
-    
+
+
+def searchTuition(query_words):
+    combined_condition = Q()
+    for word in query_words:
+        combined_condition |= Q(course__icontains=word)
+        combined_condition |= Q(subject__icontains=word)
+        combined_condition |= Q(locality__icontains=word)
+        combined_condition |= Q(slug__icontains=word)
+    tuitions = Tuitions.objects.filter(combined_condition)
+    return tuitions
+
+  
+
+
+
 def changeStatus(tutionid):
     try:
         T = Tuitions.objects.get(id= tutionid)

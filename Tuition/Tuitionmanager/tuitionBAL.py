@@ -22,6 +22,9 @@ def get_latest_tuition():
 
 
 
+def search_tuitions(words):
+    return searchTuition(words)
+
 
 
 #return all detail of a tution with given tutitionId
