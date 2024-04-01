@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(leveln
 
 def saveTuition(user, student_name, phone_number, course, subject, description, teaching_mode, fee, pincode=None, locality= ''):
     try:
-        slug = pincode.District #getting distruc for slug from pincode object
+        slug =pincode.Devision + pincode.District #getting distruc for slug from pincode object
         slug = slug + '-' + course.split()[0] + '-' + subject.split()[0] + '-' + locality.split()[0]
         posted_date = date.today()
         return addTuition(posted_date, user, student_name, phone_number, course, subject, description, teaching_mode, fee,locality,slug, pincode)

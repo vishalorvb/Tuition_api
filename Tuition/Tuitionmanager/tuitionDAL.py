@@ -21,7 +21,7 @@ def addTuition(posted_date, user, student_name, phone_number, course, subject, d
 
 def getLatestTuition():
     try:  
-        t =  Tuitions.objects.filter(status=True).order_by('-posted_date','-id').values('posted_date', 'student_name', 'course','id','subject','description','unlocks')[:10]
+        t =  Tuitions.objects.filter(status=True).order_by('-posted_date','-id')[:10]
         return t
     except Exception:
         logging.exception("getlatestTuition")
