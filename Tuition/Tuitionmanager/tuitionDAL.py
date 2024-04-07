@@ -3,6 +3,7 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
                     filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
@@ -19,14 +20,33 @@ def addTuition(posted_date, user, student_name, phone_number, course, subject, d
         logging.exception("add tuition in tuition DAL")
         return False
 
-def getLatestTuition():
+def getLatestTuition(pageNumber):
     try:  
-        t =  Tuitions.objects.filter(status=True).order_by('-posted_date','-id')[:10]
+        tuitions =  Tuitions.objects.filter(status=True).order_by('-posted_date','-id')
+        paginator = Paginator(tuitions, 10)
+        t = paginator.get_page(pageNumber)
+        print(paginator.num_pages)
+        if  pageNumber > paginator.num_pages:
+            return []
         return t
     except Exception:
         logging.exception("getlatestTuition")
         return False
-    
+
+def searchTuition(query_words):
+    combined_condition = Q()
+    for word in query_words:
+        combined_condition |= Q(course__icontains=word)
+        combined_condition |= Q(subject__icontains=word)
+        combined_condition |= Q(locality__icontains=word)
+        combined_condition |= Q(slug__icontains=word)
+
+
+        combined_condition |= Q(pincode__District__contains=word)
+        combined_condition |= Q(pincode__Devision__contains=word)
+    tuitions = Tuitions.objects.filter(combined_condition)
+    return tuitions
+
 
 def getDetails(tuitionId):
     try:
@@ -78,19 +98,6 @@ def IsTuitionBelongsToUser(userid,tuitionid):
         return False
 
 
-def searchTuition(query_words):
-    combined_condition = Q()
-    for word in query_words:
-        combined_condition |= Q(course__icontains=word)
-        combined_condition |= Q(subject__icontains=word)
-        combined_condition |= Q(locality__icontains=word)
-        combined_condition |= Q(slug__icontains=word)
-
-
-        combined_condition |= Q(pincode__District__contains=word)
-        combined_condition |= Q(pincode__Devision__contains=word)
-    tuitions = Tuitions.objects.filter(combined_condition)
-    return tuitions
 
   
 

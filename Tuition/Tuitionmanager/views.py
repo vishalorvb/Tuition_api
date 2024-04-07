@@ -86,8 +86,8 @@ def changeStatus(request):
 
 
 @api_view(['GET'])
-def getLatestTuition(request):
-    tuition =  get_latest_tuition()
+def getLatestTuition(request,pageNumber):
+    tuition =  get_latest_tuition(pageNumber)
     data = TuitionsSerializer(tuition, many=True).data
     return Response({"message": "Operation Successful.", "data": data}, status=status.HTTP_200_OK)
 

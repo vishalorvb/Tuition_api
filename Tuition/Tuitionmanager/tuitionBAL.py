@@ -17,8 +17,8 @@ def saveTuition(user, student_name, phone_number, course, subject, description, 
 
 
 
-def get_latest_tuition():
-    return getLatestTuition()
+def get_latest_tuition(pageNumber):
+    return getLatestTuition(pageNumber)
 
 
 
