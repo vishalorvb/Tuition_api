@@ -22,8 +22,8 @@ def get_latest_tuition(pageNumber):
 
 
 
-def search_tuitions(words):
-    return searchTuition(words)
+def search_tuitions(words,pageNumber):
+    return searchTuition(words,pageNumber)
 
 
 

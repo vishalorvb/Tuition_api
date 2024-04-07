@@ -7,7 +7,7 @@ urlpatterns = [
     re_path(r'^/unlockTuition', views.unlockTuition, name='unlockTuition'),
     path('/getTuitionByid/<int:tuitionId>', views.get_tution_byId, name='tuitionByid'),
     path('/getLatesttuition/<int:pageNumber>', views.getLatestTuition, name='getLatestTuition'),
-    path('/search/', views.search, name='searchTuition'),
+    path('/search/<int:pageNumber>/', views.search, name='searchTuition'),
 
 
 

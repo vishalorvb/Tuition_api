@@ -25,7 +25,6 @@ def getLatestTuition(pageNumber):
         tuitions =  Tuitions.objects.filter(status=True).order_by('-posted_date','-id')
         paginator = Paginator(tuitions, 10)
         t = paginator.get_page(pageNumber)
-        print(paginator.num_pages)
         if  pageNumber > paginator.num_pages:
             return []
         return t
@@ -33,7 +32,7 @@ def getLatestTuition(pageNumber):
         logging.exception("getlatestTuition")
         return False
 
-def searchTuition(query_words):
+def searchTuition(query_words,pageNumber):
     combined_condition = Q()
     for word in query_words:
         combined_condition |= Q(course__icontains=word)
@@ -44,8 +43,13 @@ def searchTuition(query_words):
 
         combined_condition |= Q(pincode__District__contains=word)
         combined_condition |= Q(pincode__Devision__contains=word)
+        
     tuitions = Tuitions.objects.filter(combined_condition)
-    return tuitions
+    paginator = Paginator(tuitions, 10)
+    t = paginator.get_page(pageNumber)
+    if  pageNumber > paginator.num_pages:
+        return []
+    return t
 
 
 def getDetails(tuitionId):

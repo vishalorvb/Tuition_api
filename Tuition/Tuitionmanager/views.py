@@ -109,10 +109,10 @@ def get_tution_byId(request,tuitionId):
     return  Response({"message": "Authenticated user.", "data": TuitionsSerializer_withPhone(tuition).data}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-def search(request):
+def search(request,pageNumber):
     query = request.query_params.get('query', '')
      # Split the query into individual words
     query_words = query.split()
 
-    t = search_tuitions(query_words)
+    t = search_tuitions(query_words,pageNumber)
     return Response({"message": "Authenticated user.", "data": TuitionsSerializer(t,many=True).data}, status=status.HTTP_200_OK)
