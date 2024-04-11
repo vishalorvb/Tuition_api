@@ -34,7 +34,7 @@ def createTuition(request):
         fee = request.data['fee']
         mode = request.data['mode']
         pincode = 0 if request.data.get('pincode') == None else request.data.get('pincode')
-        locality = " " if request.data.get('locality') == None else request.data.get('locality')
+        locality = "online" if request.data.get('locality') == None else request.data.get('locality')
         pin = isPincodeExists(pincode)
     except:
         logging.exception("post tuition")
@@ -102,11 +102,11 @@ def get_tution_byId(request,tuitionId):
         return Response({"message": "No tuition found", "data": None}, status=status.HTTP_200_OK)
     
 
-
+    
     if request.user.is_authenticated and canPhoneNumber(tuition.id, request.user.id):
-        return Response({"message": "Authenticated user.", "data": TuitionsSerializer(tuition).data}, status=status.HTTP_200_OK)
+        return Response({"message": "Authenticated user.", "data": TuitionsSerializer_withPhone(tuition).data}, status=status.HTTP_200_OK)
 
-    return  Response({"message": "Authenticated user.", "data": TuitionsSerializer_withPhone(tuition).data}, status=status.HTTP_200_OK)
+    return  Response({"message": "UnAuthenticated user.", "data": TuitionsSerializer(tuition).data}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def search(request,pageNumber):
