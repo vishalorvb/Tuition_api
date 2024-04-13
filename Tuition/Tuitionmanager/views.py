@@ -61,10 +61,10 @@ def unlockTuition(request):
         tuition_id = request.data['tuition_id']
         contact = unlock_tuitions(request.user,tuition_id)
         if contact:
-            return Response({"message": contact}, status=status.HTTP_200_OK)
-        Response({"message": "Failed to get contact."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Succesfull","contact":contact}, status=status.HTTP_200_OK)
+        Response({"message": "Failed to get contact.","contact":None}, status=status.HTTP_400_BAD_REQUEST)
     except:
-        return Response({"message": "Invalid Data."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Invalid Data.","contact":None}, status=status.HTTP_400_BAD_REQUEST)
 
 
 

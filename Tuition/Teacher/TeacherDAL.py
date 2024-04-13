@@ -44,7 +44,7 @@ def IsUserTeacherExist(userid,teacherid):
 
 def CreateTeacher(Name, Gender, Experience, location,
                   Qualification, Subject, classes, About,
-                  User_id, Teaching_mode, Phone_number,Age,Fee,Pincode):
+                  User_id, Teaching_mode, Phone_number,Age,Fee,Pincode,photo=None):
     try:
         teacher = Teacher.objects.create(
                      Name=Name, Gender=Gender,
@@ -52,7 +52,7 @@ def CreateTeacher(Name, Gender, Experience, location,
                      Qualification=Qualification, Subject=Subject,
                      classes=classes, About=About, User_id=User_id,
                      Teaching_mode=Teaching_mode, Phone_number=Phone_number,
-                     Age=Age,Fee=Fee,Pincode=Pincode)
+                     Age=Age,Fee=Fee,Pincode=Pincode,Photo=photo)
         change_user_teacher_status(User_id)
         teacher.save()
         return True

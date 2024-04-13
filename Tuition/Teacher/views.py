@@ -7,7 +7,7 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .serializers import TeacherSerializer
-
+from utility.ResizeImage import reSizeImage
 
 
 
@@ -22,9 +22,14 @@ from .serializers import TeacherSerializer
 @permission_classes([IsAuthenticated])
 def create_teacher(request):
     Teacher = is_user_teacher(request.user.id)
+    user = request.user
     if Teacher:
         return Response({"message": "Already Exists."}, status=status.HTTP_400_BAD_REQUEST)
     try:
+        image_file = request.FILES.get('photo', None)
+        print(image_file)
+        if image_file is not None:
+           image_file =  reSizeImage(image_file, (500, 500),str(user.id))
         Name = request.data['teacher_name']
         Gender = request.data['gender']
         Experience = request.data['experience']
@@ -44,7 +49,7 @@ def create_teacher(request):
                                    Location=Location, Qualification=Qualification, Subject=Subject, classes=classes,
                                    About=About, User_id=User_id, Teaching_mode=Teaching_mode,
                                    Phone_number=request.user.phone_number,
-                                   Age=Age, Fee=Fee, Pincode=pin)
+                                   Age=Age, Fee=Fee, Pincode=pin,photo=image_file)
         if teacher:
             message = "Register as teacher succefully."
             return Response({"message": message}, status=status.HTTP_201_CREATED)

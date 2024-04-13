@@ -71,10 +71,11 @@ def login(request):
     if user:
         refresh = RefreshToken.for_user(user)
         response_data = {
-            'refresh': str(refresh),
+            #'refresh': str(refresh),
             'access': str(refresh.access_token),
             'Full_name': user.Full_name,
             'roleId': user.role.roleId,
+            'isTeacher': user.is_teacher
         }
         return Response(response_data, status=status.HTTP_200_OK)
     else:

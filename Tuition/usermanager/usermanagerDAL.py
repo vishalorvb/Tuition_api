@@ -93,6 +93,7 @@ def change_user_teacher_status(userId):
     try:
         user = CustomUser.object.get(id = userId)
         user.is_teacher = True
+        user.save()
         return True
     except Exception :
         logging.exception("DAL change_user_teacher_status")
