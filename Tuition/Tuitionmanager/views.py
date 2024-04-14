@@ -115,3 +115,18 @@ def search(request,pageNumber):
 
     t = search_tuitions(query_words,pageNumber)
     return Response({"message": "Authenticated user.", "data": TuitionsSerializer(t,many=True).data}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def unlockedtuition(request):
+    tuitions = unlockedTuitionBAL(request.user)
+    return Response({ "data": TuitionsSerializer_withPhone(tuitions, many=True).data}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def userPostedTuition(request):
+    tuitions = userPost(request.user.id)
+    return Response({ "data": TuitionsSerializer(tuitions, many=True).data}, status=status.HTTP_200_OK)

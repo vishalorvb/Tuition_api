@@ -71,3 +71,5 @@ def verifyEmail(link):
     
 
 
+def getUserdata(userId):
+    return getUserinfo(userId)

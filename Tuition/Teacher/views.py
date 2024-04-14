@@ -136,3 +136,12 @@ def search(request,pageNumber):
     query_words = query.split()
     t = search_Teacher(query_words,pageNumber)
     return Response({"message": "Authenticated user.", "data": TeacherSerializer(t,many=True).data}, status=status.HTTP_200_OK)
+
+
+
+@api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def unlocked_teacher(request):
+    teacher = unlockedTeacher(request.user.id)
+    return Response({"message": "Authenticated user.", "data": TeacherSerializerWithphone(teacher,many=True).data}, status=status.HTTP_200_OK)

@@ -1,5 +1,6 @@
 from .models import *
 import logging
+from django.core.exceptions import ObjectDoesNotExist
 logging.basicConfig(level=logging.INFO,format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',filename='../info.log', filemode='a',datefmt='%d-%b-%y %H:%M:%S')
 
 def getRole(roleId):
@@ -96,7 +97,13 @@ def change_user_teacher_status(userId):
         return True
  
 
+def getUserinfo(userId):
+    try:
+        user = CustomUser.objects.get(id=userId) 
+        return user  
+    except ObjectDoesNotExist:
+        logging.exception("user does not exist")
+        return None
         
-    
     
     

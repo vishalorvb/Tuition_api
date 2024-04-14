@@ -132,10 +132,12 @@ def MyTuition(userid):
         return None
     
 def Myunlocks(userid):
-    try:
-        t = Tuition_unlock.objects.filter(User_id=userid)
-        return t
-    except:
-        return None    
-        
+    tuition_unlocks = Tuition_unlock.objects.filter(User_id=userid)
+    tuition_ids = tuition_unlocks.values_list('Tuition_id', flat=True)
+    tuitions = Tuitions.objects.filter(id__in=tuition_ids) 
+    return tuitions
+            
+def MyPost(userId):
+    tuition_unlocks = Tuitions.objects.filter(user_id=userId)
+    return tuition_unlocks
 

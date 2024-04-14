@@ -66,3 +66,6 @@ def canPhoneNumber(user,teacherId):
 
 def search_Teacher(query_words,pageNumber):
     return searchTuition(query_words,pageNumber)
+
+def unlockedTeacher(userId):
+    return MyTeacher(userId)

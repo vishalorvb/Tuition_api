@@ -72,3 +72,8 @@ def change_status_of_tuition(userid,tutionid):
 def isPincodeExists(pin):
     return  isPincode(pin)    
         
+def unlockedTuitionBAL(userId):
+    return Myunlocks(userId)
+
+def userPost(userId):
+    return MyPost(userId)

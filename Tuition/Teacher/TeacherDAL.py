@@ -126,3 +126,10 @@ def searchTuition(query_words,pageNumber):
     if  pageNumber > paginator.num_pages:
         return []
     return t
+
+
+def MyTeacher(userId):
+    teacher_unlocks = Teacher_unlock.objects.filter(User_id=userId)
+    teacher_ids = teacher_unlocks.values_list('Teacher_id', flat=True)
+    tuitions = Teacher.objects.filter(id__in=teacher_ids) 
+    return tuitions

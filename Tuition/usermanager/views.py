@@ -9,6 +9,11 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import authentication_classes, permission_classes
+
+from  .serializer import UserSerializer
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
                     filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
 
@@ -115,3 +120,10 @@ def refreshToken(request):
         return Response({'token': response_data}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': f'Invalid refresh token: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def getUserinfo(request):
+    user = getUserdata(request.user.id)
+    return Response({ "data": UserSerializer(user).data}, status=status.HTTP_200_OK)
