@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
 from usermanager.usermanagerDAL import change_user_teacher_status
 from django.core.paginator import Paginator
+from django.db.models import Q
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
                     filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
 
@@ -105,3 +106,23 @@ def TeacherDetails(teacherId):
         return t
     except ObjectDoesNotExist:
         return None
+
+
+def searchTuition(query_words,pageNumber):
+    combined_condition = Q()
+    for word in query_words:
+        combined_condition |= Q(classes__icontains=word)
+        combined_condition |= Q(subject__icontains=word)
+        combined_condition |= Q(location__icontains=word)
+        combined_condition |= Q(slug__icontains=word)
+
+
+        combined_condition |= Q(pincode__District__contains=word)
+        combined_condition |= Q(pincode__Devision__contains=word)
+        
+    teacher = Teacher.objects.filter(combined_condition)
+    paginator = Paginator(teacher, 10)
+    t = paginator.get_page(pageNumber)
+    if  pageNumber > paginator.num_pages:
+        return []
+    return t

@@ -127,3 +127,12 @@ def get_Teacher_ById(request,teacherId):
     if request.user.is_authenticated and canPhoneNumber(request.user,teacherId):
         return Response({"message": "Authenticated user.", "data": TeacherSerializerWithphone(teacher).data}, status=status.HTTP_200_OK)
     return Response({"message": "UnAuthenticated user.", "data": TeacherSerializer(teacher).data}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def search(request,pageNumber):
+    query = request.query_params.get('query', '')
+     # Split the query into individual words
+    query_words = query.split()
+    t = search_Teacher(query_words,pageNumber)
+    return Response({"message": "Authenticated user.", "data": TeacherSerializer(t,many=True).data}, status=status.HTTP_200_OK)

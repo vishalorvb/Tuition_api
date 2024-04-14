@@ -14,7 +14,7 @@ def is_teacher_exist(teacherid):
 
 def unlock_teacherBAL(user,teacherId):
     teacher = is_teacher_exist(teacherId)
-    if IsUserTeacherExist(user.id,teacher.id) == False and user.id != teacher.User_id.id and teacher is not None:
+    if IsUserTeacherExist(user.id,teacher.id) == False and user.id != teacher.user_id.id and teacher is not None:
         if user.credit_points > 0 and  UnlockTeacher(user,teacher):
             cp = user.credit_points
             user.credit_points = cp -1
@@ -63,3 +63,6 @@ def canPhoneNumber(user,teacherId):
     if(IsUserTeacherExist(user.id,teacherId) or teacher.user_id.id == user.id):
         return True
     return False
+
+def search_Teacher(query_words,pageNumber):
+    return searchTuition(query_words,pageNumber)

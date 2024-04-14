@@ -10,7 +10,7 @@ urlpatterns = [
     re_path('getTecher_info', views.getTecher_info, name='getTecher_info'),
     path('latestTeacher/<int:pageNumber>', views.getLatestTeacher, name='latestTeacher'),
     path('getTeacherById/<int:teacherId>', views.get_Teacher_ById, name='teacherById'),
-    
+    path('search/<int:pageNumber>/', views.search, name='searchTeacher'),
 
 ]
 
