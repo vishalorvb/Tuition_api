@@ -54,7 +54,7 @@ def CreateTeacher(name, gender, experience, location,
                      classes=classes, about=about, user_id=user_id,
                      teaching_mode=teaching_mode, phone_number=phone_number,
                      age=age,fee=fee,pincode=pincode,photo=photo,slug=slug)
-        change_user_teacher_status(user_id)
+        change_user_teacher_status(user_id.id)
         teacher.save()
         return True
     except Exception:

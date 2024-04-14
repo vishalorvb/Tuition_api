@@ -29,7 +29,7 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.Full_name
+        return self.Full_name+"("+str(self.id)+")"
 
     object = CustomUserManager()
    

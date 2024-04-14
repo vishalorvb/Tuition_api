@@ -78,7 +78,7 @@ def login(request):
             'isTeacher': user.is_teacher,
             'userId': user.id
         }
-        return Response(response_data, status=status.HTTP_200_OK)
+        return Response({"message": "Login successfull!","data":response_data}, status=status.HTTP_200_OK)
     else:
         return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
     

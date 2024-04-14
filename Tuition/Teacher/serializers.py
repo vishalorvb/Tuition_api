@@ -19,4 +19,28 @@ class TeacherSerializer(serializers.ModelSerializer):
             'age',
             'fee',
             'photo',
+            'slug'
+        ]
+
+
+class TeacherSerializerWithphone(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields = fields = [
+           'id',
+            'name',
+            'phone_number',
+            'gender',
+            'experience',
+            'location',
+            'qualification',
+            'subject',
+            'classes',
+            'about',
+            'teaching_mode',
+            'pincode',
+            'age',
+            'fee',
+            'photo',
+            'slug'
         ]

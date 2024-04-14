@@ -51,7 +51,7 @@ def isPincodeExists(pin):
 
 
 def getTeacher(teacherId):
-    TeacherDetails(teacherId)
+    return TeacherDetails(teacherId)
 
 
 def getTeacheInfo(userId):
@@ -60,6 +60,6 @@ def getTeacheInfo(userId):
 
 def canPhoneNumber(user,teacherId):
     teacher  = is_teacher_exist(teacherId)
-    if(IsUserTeacherExist(user.id,teacherId) and teacher.User_id == user.id):
+    if(IsUserTeacherExist(user.id,teacherId) or teacher.user_id.id == user.id):
         return True
     return False
