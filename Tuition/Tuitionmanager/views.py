@@ -102,7 +102,6 @@ def get_tution_byId(request,tuitionId):
         return Response({"message": "No tuition found", "data": None}, status=status.HTTP_200_OK)
     
 
-    
     if request.user.is_authenticated and canPhoneNumber(tuition.id, request.user.id):
         return Response({"message": "Authenticated user.", "data": TuitionsSerializer_withPhone(tuition).data}, status=status.HTTP_200_OK)
 

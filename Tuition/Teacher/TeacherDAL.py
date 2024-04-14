@@ -3,6 +3,7 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
 from usermanager.usermanagerDAL import change_user_teacher_status
+from django.core.paginator import Paginator
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
                     filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
 
@@ -68,9 +69,13 @@ def UnlockTeacher(user,teacher):
         logging.exception("Unlock taecher DAL")
         return False
 
-def getLatestTeacher():
+def getLatestTeacher(pageNumber):
     try:
-        t = Teacher.objects.all().order_by('-Join_date')[:100]
+        teacher = Teacher.objects.all().order_by('-join_date','-id')
+        paginator = Paginator(teacher, 10)
+        t = paginator.get_page(pageNumber)
+        if  pageNumber > paginator.num_pages:
+            return []
         return t
     except Exception:
            logging.exception("Create teacher Teacher DAL") 
@@ -94,3 +99,9 @@ def getTeacherInfo(userId):
         return None
 
 
+def TeacherDetails(teacherId):
+    try:
+        t = Teacher.objects.get(id=teacherId)
+        return t
+    except ObjectDoesNotExist:
+        return None

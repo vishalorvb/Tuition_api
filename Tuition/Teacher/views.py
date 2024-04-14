@@ -108,3 +108,16 @@ def unlock_teacher(request):
     if unlock:
         return Response({"message": "Techer Unlock Successfully."}, status=status.HTTP_200_OK)
     return Response({"message": "No Credit Left."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def getLatestTeacher(request,pageNumber):
+    teacher = get_latest_teacher(pageNumber)
+    data = TeacherSerializer(teacher, many=True).data
+    return Response({"message": "Operation Successful.", "data": data}, status=status.HTTP_200_OK) 
+
+
+def get_Teacher_ById(request,teacherId):
+    teacher = teacherId(teacherId)
+    if teacher is None:
+        return Response({"message": "No tuition found", "data": None}, status=status.HTTP_200_OK)

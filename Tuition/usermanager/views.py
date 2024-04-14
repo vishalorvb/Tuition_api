@@ -75,7 +75,8 @@ def login(request):
             'access': str(refresh.access_token),
             'Full_name': user.Full_name,
             'roleId': user.role.roleId,
-            'isTeacher': user.is_teacher
+            'isTeacher': user.is_teacher,
+            'userId': user.id
         }
         return Response(response_data, status=status.HTTP_200_OK)
     else:

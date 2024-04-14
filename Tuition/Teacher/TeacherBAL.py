@@ -37,18 +37,24 @@ def save_teacher(Name, Gender, Experience,
                         Teaching_mode=Teaching_mode, Phone_number=Phone_number,
                         Age=Age,Fee=Fee,Pincode=Pincode,photo=photo)
 
-def get_latest_teacher():
-    return getLatestTeacher()    
+def get_latest_teacher(pageNumber):
+    return getLatestTeacher(pageNumber)    
 
 
 def isPincodeExists(pin):
     return  isPincode(pin)
 
 
-def getTeacher(userId):
-    pass
+def getTeacher(teacherId):
+    TeacherDetails(teacherId)
 
 
 def getTeacheInfo(userId):
     teacher = getTeacherInfo(userId)
     return teacher
+
+def canPhoneNumber(user,teacherId):
+    teacher  = is_teacher_exist(teacherId)
+    if(IsUserTeacherExist(user.id,teacherId) and teacher.User_id == user.id):
+        return True
+    return False
