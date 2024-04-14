@@ -42,8 +42,8 @@ def create_teacher(request):
         Teaching_mode = request.data['mode']
         Age = request.data['age']
         Fee = request.data['fee']
-        Pincode = 0 if  request.data.get('pincode') == None else request.data.get('pincode')
-        pin = None if isPincode(Pincode)==False else isPincode(Pincode)
+        Pincode = request.data.get('pincode',0)
+        pin = isPincode(Pincode)
         
         teacher = save_teacher(Name=Name, Gender=Gender, Experience=Experience,
                                    Location=Location, Qualification=Qualification, Subject=Subject, classes=classes,
@@ -102,12 +102,14 @@ def getTecher_info(request):
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def unlock_teacher(request):
-    user = request.user
-    teacherId = request.data["teacher_id"]
-    unlock = unlock_teacherBAL(user,teacherId)
-    if unlock:
-        return Response({"message": "Techer Unlock Successfully."}, status=status.HTTP_200_OK)
-    return Response({"message": "No Credit Left."}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        teacherId = request.data["teacher_id"]
+        contact = unlock_teacherBAL(request.user,teacherId)
+        if contact:
+            return Response({"message": "Succesfull","contact":contact}, status=status.HTTP_200_OK)
+        return Response({"message": "Failed to get contact.","contact":None}, status=status.HTTP_400_BAD_REQUEST)
+    except:
+        return Response({"message": "Invalid Data.","contact":None}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])

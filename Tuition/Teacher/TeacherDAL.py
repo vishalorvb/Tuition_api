@@ -43,18 +43,18 @@ def IsUserTeacherExist(userid,teacherid):
         
 
 
-def CreateTeacher(Name, Gender, Experience, location,
-                  Qualification, Subject, classes, About,
-                  User_id, Teaching_mode, Phone_number,Age,Fee,Pincode,photo=None):
+def CreateTeacher(name, gender, experience, location,
+                  qualification, subject, classes, about,
+                  user_id, teaching_mode, phone_number,age,fee,pincode,slug,photo=None):
     try:
         teacher = Teacher.objects.create(
-                     Name=Name, Gender=Gender,
-                     Experience=Experience, Location=location,
-                     Qualification=Qualification, Subject=Subject,
-                     classes=classes, About=About, User_id=User_id,
-                     Teaching_mode=Teaching_mode, Phone_number=Phone_number,
-                     Age=Age,Fee=Fee,Pincode=Pincode,Photo=photo)
-        change_user_teacher_status(User_id)
+                     name=name, gender=gender,
+                     experience=experience, location=location,
+                     qualification=qualification, subject=subject,
+                     classes=classes, about=about, user_id=user_id,
+                     teaching_mode=teaching_mode, phone_number=phone_number,
+                     age=age,fee=fee,pincode=pincode,photo=photo,slug=slug)
+        change_user_teacher_status(user_id)
         teacher.save()
         return True
     except Exception:

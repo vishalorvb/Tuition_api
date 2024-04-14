@@ -33,8 +33,8 @@ def createTuition(request):
         description = request.data['description']
         fee = request.data['fee']
         mode = request.data['mode']
-        pincode = 0 if request.data.get('pincode') == None else request.data.get('pincode')
-        locality = "online" if request.data.get('locality') == None else request.data.get('locality')
+        pincode = request.data.get('pincode',0)
+        locality = request.data.get('locality','online')
         pin = isPincodeExists(pincode)
     except:
         logging.exception("post tuition")
@@ -62,7 +62,7 @@ def unlockTuition(request):
         contact = unlock_tuitions(request.user,tuition_id)
         if contact:
             return Response({"message": "Succesfull","contact":contact}, status=status.HTTP_200_OK)
-        Response({"message": "Failed to get contact.","contact":None}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Failed to get contact.","contact":None}, status=status.HTTP_400_BAD_REQUEST)
     except:
         return Response({"message": "Invalid Data.","contact":None}, status=status.HTTP_400_BAD_REQUEST)
 

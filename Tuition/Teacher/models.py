@@ -23,6 +23,7 @@ class Teacher(models.Model):
     age = models.IntegerField(default=0)
     fee = models.CharField(max_length=5, default=0)
     photo = models.ImageField(upload_to = 'teacherphotos/',null=True)
+    slug = models.CharField(max_length=250, null=True, blank=True)
 
     def __str__(self):
         return self.Name
