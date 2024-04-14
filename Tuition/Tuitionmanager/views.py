@@ -129,4 +129,4 @@ def unlockedtuition(request):
 @permission_classes([IsAuthenticated])
 def userPostedTuition(request):
     tuitions = userPost(request.user.id)
-    return Response({ "data": TuitionsSerializer(tuitions, many=True).data}, status=status.HTTP_200_OK)
+    return Response({ "data": TuitionsSerializer_withPhone(tuitions, many=True).data}, status=status.HTTP_200_OK)
