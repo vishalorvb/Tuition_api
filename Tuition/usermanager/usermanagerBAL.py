@@ -13,21 +13,21 @@ logging.basicConfig(level=logging.INFO,format='%(asctime)s-%(process)d-%(levelna
 
 CREDIT_POINT = 6
 
-def reSizeImage(input_image, output_size):
-    image = Image.open(input_image)
-    image = ImageOps.exif_transpose(image)
-    image.thumbnail(output_size)
-    image_io = BytesIO()
-    image.save(image_io, format='JPEG')
-    resized_image = InMemoryUploadedFile(
-        image_io,
-        None,
-        'resized_image.jpg',
-        'image/jpeg',
-        image_io.tell(),
-        None
-    )
-    return resized_image
+#def reSizeImage(input_image, output_size):
+#    image = Image.open(input_image)
+#    image = ImageOps.exif_transpose(image)
+#    image.thumbnail(output_size)
+#    image_io = BytesIO()
+#    image.save(image_io, format='JPEG')
+#    resized_image = InMemoryUploadedFile(
+#        image_io,
+#        None,
+#        'resized_image.jpg',
+#        'image/jpeg',
+#        image_io.tell(),
+#        None
+#    )
+#    return resized_image
 
 def saveUser(name,email,phone):
     if IsPhoneNumberExist(phone) :

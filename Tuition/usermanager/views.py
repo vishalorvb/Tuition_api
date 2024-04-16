@@ -12,6 +12,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import authentication_classes, permission_classes
+from utility.ResizeImage import reSizeImage
 
 from  .serializer import UserSerializer
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
@@ -44,9 +45,28 @@ def createUser(request):
             return Response({"message": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
     
 
-
+@api_view(['PUT'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def updateProfile(request):
-    pass
+    try:
+        full_name = request.data['full_name']
+        email = request.data['email']
+        image_file = request.FILES.get('photo', None)
+        if image_file :
+           image_file =  reSizeImage(image_file, (500, 500),str(request.user.id))
+        user = getUserdata(request.user.id)
+        user.Full_name = full_name
+        user.email = email
+        user.profilepic = image_file
+        user.save()
+        return Response({"message": "Updated"},status=status.HTTP_200_OK)
+      
+    except Exception:
+        logging.exception("Registration post request")
+        return Response({"message": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+    
+
 
 
 @api_view(['POST'])
