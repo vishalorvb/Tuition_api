@@ -18,8 +18,10 @@ def reSizeImage(input_image, output_size,id):
     image_io = BytesIO()
     
     # Determine the image format from the input image's format
-    image_format = input_image.name.split('.')[-1].upper()
+
+    image_format = input_image.name.split('.')[-1].upper() 
     
+    print(image_format)
     # Save the image to the BytesIO object with the determined format
     image.save(image_io, format=image_format)
     

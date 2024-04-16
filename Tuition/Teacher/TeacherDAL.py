@@ -11,14 +11,12 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(leveln
 
 def IsUserTeacher(userid):
     try:
-        t = Teacher.objects.get(User_id = userid)
+        t = Teacher.objects.get(user_id = userid)
         return t
-    except MultipleObjectsReturned:
-        return True
     except ObjectDoesNotExist:
+        logging.info("Teacher does not exist")
         return False
-    except Exception:
-        logging.info("Is teacher exist DAL")
+
         
         
 

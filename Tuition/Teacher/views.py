@@ -27,7 +27,6 @@ def create_teacher(request):
         return Response({"message": "Already Exists."}, status=status.HTTP_400_BAD_REQUEST)
     try:
         image_file = request.FILES.get('photo', None)
-        print(image_file)
         if image_file is not None:
            image_file =  reSizeImage(image_file, (500, 500),str(user.id))
         Name = request.data['teacher_name']
@@ -61,30 +60,41 @@ def create_teacher(request):
         return Response({"message": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
 
-
-@api_view(['POST'])
+@api_view(['PUT'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
-def update_teacher_Profile(request):
-    Teacher = is_user_teacher(request.user.id)
-    if Teacher == False:
-        return Response({"message": "User is not a teacher."}, status=status.HTTP_400_BAD_REQUEST)
+def update_teacher_Profile(request): # This full api logic is wrong
+  
     try:
-        Teacher.Name = request.data['name']
-        Teacher.Experience = request.data['experience']
-        Teacher.Location = request.data['locality']
-        Teacher.Qualification = request.data['qualification']
-        Teacher.Subject = request.data['subject']
+        #checking techer exit ot not for a given teacherID 
+        Teacher = is_teacher_exist(request.data['id'])
+        if Teacher == False :
+            return Response({"message": "Invalid teacher ID."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        #checking techer belong to logged in user
+        if Teacher.user_id.id != request.user.id:
+            return Response({"message": "Teacher not belogs to user."}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        
+        
+        image_file = request.FILES.get('photo', None)
+        if image_file :
+           image_file =  reSizeImage(image_file, (500, 500),str(request.user.id))
+           Teacher.photo = image_file
+        Teacher.name = request.data['name']
+        Teacher.experience = request.data['experience']
+        Teacher.location = request.data['location']
+        Teacher.qualification = request.data['qualification']
+        Teacher.subject = request.data['subject']
         Teacher.classes = request.data['classes']
-        Teacher.Pincode =None if isPincode(request.data['pincode'])==False else isPincode(request.data['pincode'])
-        Teacher.Teaching_mode = request.data['mode']
-        Teacher.Age = request.data['age']
-        Teacher.About = request.data['about']
+        Teacher.pincode =isPincode(request.data.get('pincode',0))
+        Teacher.teaching_mode = request.data['mode']
+        Teacher.age = request.data['age']
+        Teacher.about = request.data['about']
         Teacher.save()
         return Response({"message": "Teacher Profile Updated."}, status=status.HTTP_202_ACCEPTED)
     except Exception:
         logging.exception("create teacher in view")
-        return Response({"message": "Internal Server Error, Invalid Data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+        return Response({"message": "Invalid Data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
 
 @api_view(['GET'])
