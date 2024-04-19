@@ -51,19 +51,19 @@ def create_teacher(request):
                                    age=Age, fee=Fee, pincode=pin,photo=image_file)
         if teacher:
             message = "Register as teacher succefully."
-            return Response({"message": message}, status=status.HTTP_201_CREATED)
+            return Response({"message": message,"teacherId":teacher.id}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message": "Failed to create."}, status=status.HTTP_400_BAD_REQUEST)
 
-    except:
+    except KeyError:
         logging.exception("Registration post request")
-        return Response({"message": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+        return Response({"message": "Invalid data format"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
 
 @api_view(['PUT'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
-def update_teacher_Profile(request): # This full api logic is wrong
+def update_teacher_Profile(request): 
   
     try:
         #checking techer exit ot not for a given teacherID 
@@ -92,7 +92,7 @@ def update_teacher_Profile(request): # This full api logic is wrong
         Teacher.about = request.data['about']
         Teacher.save()
         return Response({"message": "Teacher Profile Updated."}, status=status.HTTP_202_ACCEPTED)
-    except Exception:
+    except KeyError:
         logging.exception("create teacher in view")
         return Response({"message": "Invalid Data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
@@ -136,7 +136,7 @@ def get_Teacher_ById(request,teacherId):
         return Response({"message": "No Teacher found", "data": None}, status=status.HTTP_200_OK)
     if request.user.is_authenticated and canPhoneNumber(request.user,teacherId):
         return Response({"message": "Authenticated user.", "data": TeacherSerializerWithphone(teacher).data}, status=status.HTTP_200_OK)
-    return Response({"message": "UnAuthenticated user.", "data": TeacherSerializer(teacher).data}, status=status.HTTP_200_OK)
+    return Response({"message": "UnAuthenticated user.", "data": TeacherSerializerWithphone(teacher).data}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

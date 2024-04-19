@@ -19,6 +19,8 @@ class Tuitions(models.Model):
     unlocks = models.IntegerField(null=True, blank=True,default=0)
     verify = models.BooleanField(default=False)
     slug = models.CharField(max_length=250, null=True, blank=True)
+    photo = models.ImageField(upload_to = 'tuitionphoto/',null=True,default=None)
+    
 
 
 

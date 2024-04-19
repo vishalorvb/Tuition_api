@@ -40,10 +40,9 @@ def createUser(request):
             return Response({"message": message}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message": res}, status=status.HTTP_400_BAD_REQUEST)
-    except Exception:
-            logging.exception("Registration post request")
-            return Response({"message": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
-    
+    except KeyError as e:
+        logging.info("key error")
+        return Response({"message": "Invalid data format"}, status=status.HTTP_400_BAD_REQUEST) 
 
 @api_view(['PUT'])
 @authentication_classes([JWTAuthentication])
@@ -60,11 +59,11 @@ def updateProfile(request):
         user.email = email
         user.profilepic = image_file
         user.save()
-        return Response({"message": "Updated"},status=status.HTTP_200_OK)
+        return Response({"message": "Profile updated"},status=status.HTTP_200_OK)
       
-    except Exception:
-        logging.exception("Registration post request")
-        return Response({"message": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+    except KeyError as e:
+        logging.info("key error")
+        return Response({"message": "Invalid data format"}, status=status.HTTP_400_BAD_REQUEST) 
     
 
 
@@ -78,10 +77,9 @@ def sendOtp(request):
             return Response({"message": message}, status=status.HTTP_200_OK)
         else:
             return Response({"message": "Invalid phone number."}, status=status.HTTP_400_BAD_REQUEST)
-    except Exception:
-            logging.exception("Registration post request")
-            return Response({"message": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
-
+    except KeyError as e:
+        logging.info("key error")
+        return Response({"message": "Invalid data format"}, status=status.HTTP_400_BAD_REQUEST) 
 
 @api_view(['POST'])
 def login(request):

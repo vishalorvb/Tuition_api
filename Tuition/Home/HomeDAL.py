@@ -17,7 +17,7 @@ def isPincode(pincode):
     
     
 def getLikePincode(pin):
-    val = pincodes.objects.filter(Pincode__startswith=pin).values('Pincode')[:20]
+    val = pincodes.objects.filter(Pincode__startswith=pin).values('Pincode')[:10]
     return val
 
     

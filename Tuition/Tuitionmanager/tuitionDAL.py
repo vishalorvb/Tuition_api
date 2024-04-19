@@ -11,14 +11,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(leveln
 
 
 #add new tuition in database
-def addTuition(posted_date, user, student_name, phone_number, course, subject, description, teaching_mode, fee,  locality,slug, pincode=None,):
-    try:
-        Tuitions.objects.create(
-            posted_date=posted_date, user_id=user, student_name=student_name, phone_number=phone_number,course=course,subject=subject,description=description,teaching_mode=teaching_mode,fee=fee,pincode=pincode,locality=locality,slug=slug)
-        return True
-    except Exception:
-        logging.exception("add tuition in tuition DAL")
-        return False
+def addTuition(posted_date, user, student_name, phone_number, 
+               course, subject, description, teaching_mode, fee, 
+               locality,slug, photo,pincode=None,):
+    
+    t = Tuitions.objects.create(
+            posted_date=posted_date, user_id=user, student_name=student_name, phone_number=phone_number,course=course,subject=subject,description=description,teaching_mode=teaching_mode,fee=fee,pincode=pincode,locality=locality,slug=slug,photo=photo)
+    print(t.id)
+    return t.id
+
 
 def getLatestTuition(pageNumber):
     try:  
@@ -44,7 +45,7 @@ def searchTuition(query_words,pageNumber):
         combined_condition |= Q(pincode__District__contains=word)
         combined_condition |= Q(pincode__Devision__contains=word)
         
-    tuitions = Tuitions.objects.filter(combined_condition)
+    tuitions = Tuitions.objects.filter(combined_condition).order_by('-posted_date','-id')
     paginator = Paginator(tuitions, 10)
     t = paginator.get_page(pageNumber)
     if  pageNumber > paginator.num_pages:

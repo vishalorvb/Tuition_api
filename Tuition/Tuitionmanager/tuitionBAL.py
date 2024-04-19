@@ -5,12 +5,12 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(leveln
                     filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
 
 
-def saveTuition(user, student_name, phone_number, course, subject, description, teaching_mode, fee, pincode=None, locality= ''):
+def saveTuition(user, student_name, phone_number, course, subject, description,photo, teaching_mode, fee, pincode=None, locality= ''):
     try:
-        slug =pincode.Devision + pincode.District #getting distruc for slug from pincode object
+        slug =pincode.Devision + pincode.District #getting district for slug from pincode object
         slug = slug + '-' + course.split()[0] + '-' + subject.split()[0] + '-' + locality.split()[0]
         posted_date = date.today()
-        return addTuition(posted_date, user, student_name, phone_number, course, subject, description, teaching_mode, fee,locality,slug, pincode)
+        return addTuition(posted_date, user, student_name, phone_number, course, subject, description, teaching_mode, fee,locality,slug, photo,pincode)
     except Exception:
         logging.exception("saveTuition in tuitionBAL")
         return False
