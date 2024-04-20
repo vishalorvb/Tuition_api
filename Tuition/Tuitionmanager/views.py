@@ -54,7 +54,7 @@ def createTuition(request):
 
 
 
-"""
+
 
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication])
@@ -69,7 +69,7 @@ def unlockTuition(request):
     except:
         return Response({"message": "Invalid Data.","contact":None}, status=status.HTTP_400_BAD_REQUEST)
 
-"""
+
 
 
 @api_view(['POST'])
@@ -119,7 +119,7 @@ def search(request,pageNumber):
     t = search_tuitions(query_words,pageNumber)
     return Response({"message": "Search result.", "data": TuitionsSerializer_withPhone(t,many=True).data}, status=status.HTTP_200_OK) # change it to without phone number in next release
 
-"""
+
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
@@ -127,7 +127,7 @@ def unlockedtuition(request):
     tuitions = unlockedTuitionBAL(request.user)
     return Response({ "data": TuitionsSerializer_withPhone(tuitions, many=True).data}, status=status.HTTP_200_OK)
 
-"""
+
 
 
 @api_view(['GET'])
