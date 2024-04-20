@@ -51,18 +51,19 @@ def updateProfile(request):
     try:
         full_name = request.data['full_name']
         email = request.data['email']
+        user = getUserdata(request.user.id)
+        if user.email != email and isEmailexist(email):
+            return Response({"message": "Email already exist"}, status=status.HTTP_400_BAD_REQUEST) 
         image_file = request.FILES.get('photo', None)
         if image_file :
            image_file =  reSizeImage(image_file, (500, 500),str(request.user.id))
-        user = getUserdata(request.user.id)
+        
         user.Full_name = full_name
         user.email = email
         user.profilepic = image_file
         user.save()
         return Response({"message": "Profile updated"},status=status.HTTP_200_OK)
-      
-    except KeyError as e:
-        logging.info("key error")
+    except KeyError:
         return Response({"message": "Invalid data format"}, status=status.HTTP_400_BAD_REQUEST) 
     
 

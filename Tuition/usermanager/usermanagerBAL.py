@@ -48,6 +48,9 @@ def saveUser(name,email,phone):
         else:
             logging.error("Invalid Phone Number")
             return "Invalid Phone Number"
+        
+def isEmailexist(email):
+    return IsEmailExist(email)
 
 
 def updatePassword(phone):    
