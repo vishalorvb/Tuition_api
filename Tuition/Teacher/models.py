@@ -22,7 +22,7 @@ class Teacher(models.Model):
     pincode = models.ForeignKey(pincodes, on_delete=models.DO_NOTHING, null=True,default=None)
     age = models.IntegerField(default=0)
     fee = models.CharField(max_length=5, default=0)
-    photo = models.ImageField(upload_to = 'teacherphotos/',null=True)
+    photo = models.ImageField(upload_to = 'teacherphotos/',null=True,default=None)
     slug = models.CharField(max_length=250, null=True, blank=True)
 
     def __str__(self):

@@ -64,23 +64,17 @@ def create_teacher(request):
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def update_teacher_Profile(request): 
-  
     try:
-        #checking techer exit ot not for a given teacherID 
-        Teacher = is_teacher_exist(request.data['id'])
+        #checking user is teacher or not
+        Teacher = is_user_teacher(request.user.id)
         if Teacher == False :
-            return Response({"message": "Invalid teacher ID."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        #checking techer belong to logged in user
-        if Teacher.user_id.id != request.user.id:
-            return Response({"message": "Teacher not belogs to user."}, status=status.HTTP_406_NOT_ACCEPTABLE)
-        
-        
+            return Response({"message": "Invalid attempt."}, status=status.HTTP_400_BAD_REQUEST)
+    
         image_file = request.FILES.get('photo', None)
         if image_file :
            image_file =  reSizeImage(image_file, (500, 500),str(request.user.id))
-           Teacher.photo = image_file
-        Teacher.name = request.data['name']
+        Teacher.photo = image_file
+        Teacher.name = request.data['teacher_name']
         Teacher.experience = request.data['experience']
         Teacher.location = request.data['location']
         Teacher.qualification = request.data['qualification']
@@ -104,7 +98,7 @@ def getTecher_info(request):
     teacher = getTeacheInfo(request.user.id)
     if teacher == None:
         return Response({"message": "Teacher Not Exists."}, status=status.HTTP_400_BAD_REQUEST)
-    serializer = TeacherSerializer(teacher)
+    serializer = TeacherSerializerWithphone(teacher)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -125,7 +119,7 @@ def unlock_teacher(request):
 @api_view(['GET'])
 def getLatestTeacher(request,pageNumber):
     teacher = get_latest_teacher(pageNumber)
-    data = TeacherSerializer(teacher, many=True).data
+    data = TeacherSerializerWithphone(teacher, many=True).data
     return Response({"message": "Operation Successful.", "data": data}, status=status.HTTP_200_OK) 
 
 

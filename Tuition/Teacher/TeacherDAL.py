@@ -54,8 +54,7 @@ def CreateTeacher(name, gender, experience, location,
                      teaching_mode=teaching_mode, phone_number=phone_number,
                      age=age,fee=fee,pincode=pincode,photo=photo,slug=slug)
         change_user_teacher_status(user_id.id)
-        teacher.save()
-        return teacher.id
+        return teacher
     except Exception:
         logging.exception("Create teacher Teacher DAL")
         return False
@@ -91,7 +90,6 @@ def getMyTeacher(userId):
             
 
 def getTeacherInfo(userId):
-    print()
     try:
         t= Teacher.objects.get(user_id=userId)
         return t
