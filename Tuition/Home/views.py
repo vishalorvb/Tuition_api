@@ -21,7 +21,6 @@ from rest_framework import status
 
 
 def Home(request):
-    tuitions = getTuition()
     return render(request, 'Home/home.html')
 
 

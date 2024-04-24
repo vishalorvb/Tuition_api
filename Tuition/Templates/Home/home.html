@@ -1,126 +1,15 @@
-{% extends "./index.html" %}
+<!DOCTYPE html>
 
-{% block title %}Home Tuition Home{% endblock title %}
-{% block content %}
-<div>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/search.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/Tuitions.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/carousel.css' %}">
-    {% include 'Home/carousel.html'%}
-    {% include 'Home/search.html'%}
-
-    <div class="count ">
-        <div class="row justify-content-around">
-            <div class="col-lg-5">
-                <h4 id="tuition_count">4872</h4>
-                <h2>Happy student</h2>
-            </div>
-            <div class="col-lg-5">
-                <h4 id="teacher_count">8473</h4>
-                <h2>Qualified Teacher</h2>
-            </div>
-        </div>
-    </div>
-    <div class="heading">
-        <hr>
-        <h2>Join Us</h2>
-        <hr>
-    </div>
-    {% include 'usermanager/form.html'%}
-    <br />
-    <div class="heading">
-        <hr>
-        <h2>Tuition For You</h2>
-        <hr>
-    </div>
-    <div class="row justify-content-around">
-        {% for t in tuitions %}
-        <div class="col-lg-5 col-md-5">
-            <div class="tution_body">
-                <div class="tution_body_head">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-4 col-s-4">
-                            <div class="tb_inner">
-                                <h5> &#x1F393 {{ t.course }}</h5>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4  col-s-4">
-                            <div class="tb_inner">
-                                <h5> &#x1F4D6 {{t.subject}} </h5>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4 col-s-4">
-                            <div class="tb_inner">
-                                <h5><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-geo-alt" viewBox="0 0 16 16">
-                                        <path
-                                            d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z" />
-                                        <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-                                    </svg> Bangalore</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tution_body_content">
-                    <div class="row justify-content-around">
-                        <div class="col-lg-4 col-md-4 col-s-4">
-                            <div class="tb_neck_inner">
-                                <p><b>Posted on: {{t.posted_date}}</b></p>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4 col-s-4">
-                            <div class="tb_neck_inner">
-                                <p><b>Fee: {{t.fee}} /Hr</b></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="table_info">
-                    <table>
-                        <tr>
-                            <td>Posted By:</td>
-                            <td>{{t.student_name}}</td>
-                        </tr>
-                        <tr>
-                            <td>Locality:</td>
-                            <td>{{t.locality}} </td>
-                        </tr>
-                        <tr>
-                            <td>Pin Code:</td>
-                      
-                        </tr>
-                        <tr>
-                            <td>Teaching Mode:</td>
-                            <td>{{t.teaching_mode}}</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="view-details">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-3 col-md-3 col-sm-3">
-                            <button class="darksmallbutton"><a href="/tuition/unlock_tuition?tuition_id={{t.id}}">View
-                                    Contact</a></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="description">
-                    <div class="row">
-                        <div class="col-lg-10 col-md-10 col-s-10">
-                            <p>
-                                <b>
-                                    Description:{{t.description}}
-                                </b>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
-</div>
-{% endblock content %}
-<script src="{% static 'Js/count.js' %}"></script>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+        <h1>Hello World !!</h1>
+    </body>
+</html>
