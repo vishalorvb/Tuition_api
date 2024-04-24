@@ -22,7 +22,7 @@ from rest_framework import status
 
 def Home(request):
     return render(request, 'Home/home.html')
-
+ 
 
 @login_required(login_url="/usermanager/login")
 def profile(request):
