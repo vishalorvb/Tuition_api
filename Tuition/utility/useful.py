@@ -2,14 +2,7 @@ from cryptography.fernet import Fernet
 import base64
 import hashlib
 
-
-
-
-
-def usefulPrint():
-    print(secret_key)
-    
-    
+        
 class encryption():
     def convert_to_32_byte_key(input_string):
         hashed_string = hashlib.sha256(input_string.encode()).digest()
@@ -37,3 +30,19 @@ class encryption():
         except :
            return None
     
+
+class GenerateString:
+    def __init__(self,value):
+        self.value = value
+        self.__Code = ["R", "p", "M", "l", "^", "$", "m", "r", "F", "z"] 
+        
+    def encode(self):
+        num = int(self.value) + 70762
+        s = ""
+        while(num != 0):
+            rem = num % 10
+            s = s + self.__Code[rem]
+            num = num // 10
+            
+        
+        return s   

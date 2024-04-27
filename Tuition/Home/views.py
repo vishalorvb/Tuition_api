@@ -8,17 +8,13 @@ from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.views.decorators.csrf import csrf_exempt
 import json
-from utility.useful import encryption
-from django.conf import settings
-from django.core import serializers
-
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-
+from utility.ResizeImage import reSizeImage
 
 def Home(request):
     return render(request, 'Home/home.html')
@@ -40,9 +36,7 @@ def editProfile(request):
         name = request.POST['name']
         if len(request.FILES) > 0:
             file = request.FILES['pic']
-            file = reSizeImage(file, (500, 500))
-            encypt = encryption(settings.SECRET_KEY)
-            file.name = encypt.encrypt_string(str(user.id))
+            file = reSizeImage(file, (500, 500),str(request.user.id))
             user.profilepic = file
         user.Full_name = name
         user.save()
@@ -62,21 +56,21 @@ def error(request):
 
 
 
-def reSizeImage(input_image, output_size):
-    image = Image.open(input_image)
-    image = ImageOps.exif_transpose(image)
-    image.thumbnail(output_size)
-    image_io = BytesIO()
-    image.save(image_io, format='JPEG')
-    resized_image = InMemoryUploadedFile(
-        image_io,
-        None,
-        'resized_image.jpg',
-        'image/jpeg',
-        image_io.tell(),
-        None
-    )
-    return resized_image
+#def reSizeImage(input_image, output_size):
+#    image = Image.open(input_image)
+#    image = ImageOps.exif_transpose(image)
+#    image.thumbnail(output_size)
+#    image_io = BytesIO()
+#    image.save(image_io, format='JPEG')
+#    resized_image = InMemoryUploadedFile(
+#        image_io,
+#        None,
+#        'resized_image.jpg',
+#        'image/jpeg',
+#        image_io.tell(),
+#        None
+#    )
+#    return resized_image
 
 @api_view(['GET'])
 def getPin(request):

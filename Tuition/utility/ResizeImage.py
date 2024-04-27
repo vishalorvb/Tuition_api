@@ -1,8 +1,7 @@
 from PIL import Image, ImageOps
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from utility.useful import encryption
-from django.conf import settings
+from .useful import GenerateString
 
 def reSizeImage(input_image, output_size,id):
     # Open the input image using PIL
@@ -29,8 +28,7 @@ def reSizeImage(input_image, output_size,id):
 
 
     # rename image
-    encypt = encryption(settings.SECRET_KEY)
-    name = encypt.encrypt_string(str(id))
+    name = GenerateString(str(id)).encode()
     resized_image = InMemoryUploadedFile(
         image_io,
         None,
