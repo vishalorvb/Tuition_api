@@ -42,9 +42,9 @@ def unlock_tuitions(user,tutionId):
     tution = is_tutionid_exists(tutionId)
     if  IstuitionUserExist(user.id,tution.id) == False and user.id != tution.user_id.id :
         if user.credit_points > 0 and unlockTuition(user,tution):  
-           cp = user.credit_points
-           user.credit_points = cp -1
-           user.save()
+        #   cp = user.credit_points
+        #   user.credit_points = cp -1
+        #   user.save()
            unlock  = tution.unlocks
            tution.unlocks = unlock + 1
            tution.save()

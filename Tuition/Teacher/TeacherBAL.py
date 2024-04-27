@@ -16,10 +16,9 @@ def unlock_teacherBAL(user,teacherId):
     teacher = is_teacher_exist(teacherId)
     if IsUserTeacherExist(user.id,teacher.id) == False and user.id != teacher.user_id.id and teacher is not None:
         if user.credit_points > 0 and  UnlockTeacher(user,teacher):
-            cp = user.credit_points
-            user.credit_points = cp -1
-            user.save()
-            teacher.phone_number
+            #cp = user.credit_points
+            #user.credit_points = cp -1
+            #user.save()
             return teacher.phone_number
         else:
             return None
