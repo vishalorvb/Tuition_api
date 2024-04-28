@@ -131,12 +131,7 @@ STATICFILES_DIRS =[
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-
-SECRET_KEY = "django-insecure-ct4r=zj1svv8=!#8y((jo8wd*ihgpwz9@x-4!%3l))j6w)=nb&"
 # DEBUG = int(env('DEBUG'))
-DEBUG = True
-ENVIRONMENT_NAME = "dev"
-URL = "http://127.0.0.1:8000/"
 
 # ''' sending email '''
 # EMAIL_BACKEND = env('EMAIL_BACKEND')
@@ -145,28 +140,37 @@ URL = "http://127.0.0.1:8000/"
 # EMAIL_USE_TLS = True
 # EMAIL_HOST_USER =env('EMAIL_HOST_USER')
 # EMAIL_HOST_PASSWORD =env('EMAIL_HOST_PASSWORD')
+    
+    
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
+ENVIRONMENT_NAME = env('ENVIRONMENT_NAME')
+URL = env('URL')
+DEBUG = eval(env('DEBUG'))
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST ="smtp.gmail.com"
-EMAIL_PORT =587
+
+
+EMAIL_BACKEND = env('EMAIL_BACKEND')
+EMAIL_HOST =env('EMAIL_HOST')
+EMAIL_PORT =int(env('EMAIL_PORT'))
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER ="v.kumar70760@gmail.com"
-EMAIL_HOST_PASSWORD ="Vb&third1"
+EMAIL_HOST_USER =env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD =env('EMAIL_HOST_PASSWORD')
 
 # 2factor api secret key 
-API_KEY ="5ddefe3a-b029-11ec-a4c2-0200cd936042"
+API_KEY =env('API_KEY')
 
 #razorpay credential
-RAZOR_KEY_ID ="rzp_test_QvSukHJCQx98aF"
-RAZOR_KEY_SECRET ="C32zIZ9XCiHE0DYdGLC6lUI9"
-
+RAZOR_KEY_ID = env('RAZOR_KEY_ID')
+RAZOR_KEY_SECRET = env('RAZOR_KEY_SECRET')
+print(DEBUG)
 
 
 # Azure Storage account configuration
-DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
-AZURE_ACCOUNT_NAME = 'profilephoto'
-AZURE_ACCOUNT_KEY = 'ZkbP9qJXCdxw+HmuuMdOKP4PulVGOGicZVxNvb14/Hj2USB3s2Cydz8x4ZJ3uj6a/mSWS8yQ78cu+AStIXYb8A=='
-AZURE_CONTAINER = 'profilepic'
-AZURE_OVERWRITE_FILES = True
+DEFAULT_FILE_STORAGE = env('DEFAULT_FILE_STORAGE')
+AZURE_ACCOUNT_NAME = env('AZURE_ACCOUNT_NAME')
+AZURE_ACCOUNT_KEY = env('AZURE_ACCOUNT_KEY')
+AZURE_CONTAINER = env('AZURE_CONTAINER')
+AZURE_OVERWRITE_FILES = eval(env('AZURE_OVERWRITE_FILES'))
 
 
