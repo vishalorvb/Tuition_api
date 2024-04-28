@@ -9,12 +9,6 @@ TEMP_DIR = BASE_DIR/'Templates'
 
 
 
-SECRET_KEY = "django-insecure-ct4r=zj1svv8=!#8y((jo8wd*ihgpwz9@x-4!%3l))j6w)=nb&"
-# DEBUG = int(env('DEBUG'))
-DEBUG = True
-ENVIRONMENT_NAME = "dev"
-URL = "http://127.0.0.1:8000/"
-
 ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = 'usermanager.CustomUser'
@@ -25,7 +19,6 @@ REST_FRAMEWORK = {
     ],
 }
 SIMPLE_JWT = {
-    #'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
     'ACCESS_TOKEN_LIFETIME': timedelta(days=2),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
 }
@@ -36,7 +29,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    "whitenoise.runserver_nostatic",
     'django.contrib.staticfiles',
     'storages',
     'rest_framework',
@@ -139,6 +131,13 @@ STATICFILES_DIRS =[
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+
+SECRET_KEY = "django-insecure-ct4r=zj1svv8=!#8y((jo8wd*ihgpwz9@x-4!%3l))j6w)=nb&"
+# DEBUG = int(env('DEBUG'))
+DEBUG = True
+ENVIRONMENT_NAME = "dev"
+URL = "http://127.0.0.1:8000/"
+
 # ''' sending email '''
 # EMAIL_BACKEND = env('EMAIL_BACKEND')
 # EMAIL_HOST =env('EMAIL_HOST')
@@ -171,6 +170,3 @@ AZURE_CONTAINER = 'profilepic'
 AZURE_OVERWRITE_FILES = True
 
 
-# STATICFILES_STORAGE = 'storages.backends.azure_storage.AzureStorage'
-# AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
-# STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_CONTAINER}/'
