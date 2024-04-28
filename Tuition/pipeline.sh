@@ -25,7 +25,6 @@ docker rmi nginx_image
 #create new image
 docker build -t nginx_image -f Dockerfile.nginx .
 #running container
-udo docker run -d --name nginx_container -p 4000:80 --link gunicorn_container:django-server nginx_image
-
-
+docker run -d --name nginx_container -p 4000:80 --link gunicorn_container:django-server nginx_image
+docker ps
 echo "============= Nginx successfull=================="
