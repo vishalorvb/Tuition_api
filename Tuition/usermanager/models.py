@@ -5,11 +5,11 @@ from .manager import *
 
 
 class Role(models.Model):
-    roleId = models.IntegerField()
+    roleId = models.IntegerField(primary_key=True)
     roleName = models.CharField(max_length=55)
 
     def __str__(self):
-        return self.roleName
+        return str(self.roleId) +self.roleName
 
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=12 , unique=True)
