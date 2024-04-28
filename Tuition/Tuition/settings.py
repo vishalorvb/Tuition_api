@@ -11,7 +11,7 @@ TEMP_DIR = BASE_DIR/'Templates'
 
 
 
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = "django-insecure-ct4r=zj1svv8=!#8y((jo8wd*ihgpwz9@x-4!%3l))j6w)=nb&"
 # DEBUG = int(env('DEBUG'))
 DEBUG = True
 ENVIRONMENT_NAME = "dev"
@@ -142,19 +142,26 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # ''' sending email '''
-EMAIL_BACKEND = env('EMAIL_BACKEND')
-EMAIL_HOST =env('EMAIL_HOST')
-EMAIL_PORT =int(env('EMAIL_PORT'))
+# EMAIL_BACKEND = env('EMAIL_BACKEND')
+# EMAIL_HOST =env('EMAIL_HOST')
+# EMAIL_PORT =int(env('EMAIL_PORT'))
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER =env('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD =env('EMAIL_HOST_PASSWORD')
+
+EMAIL_BACKEND = django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST =smtp.gmail.com
+EMAIL_PORT =587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER =env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD =env('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER ="v.kumar70760@gmail.com"
+EMAIL_HOST_PASSWORD ="Vb&third1"
 
 # 2factor api secret key 
-API_KEY =env('API_KEY')
+API_KEY ="5ddefe3a-b029-11ec-a4c2-0200cd936042"
 
 #razorpay credential
-RAZOR_KEY_ID =env('RAZOR_KEY_ID')
-RAZOR_KEY_SECRET =env('RAZOR_KEY_SECRET')
+RAZOR_KEY_ID ="rzp_test_QvSukHJCQx98aF"
+RAZOR_KEY_SECRET ="C32zIZ9XCiHE0DYdGLC6lUI9"
 
 
 
