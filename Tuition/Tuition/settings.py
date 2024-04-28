@@ -4,9 +4,9 @@ from datetime import timedelta
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-import environ
-env = environ.Env()
-environ.Env.read_env(BASE_DIR/ '.env')
+# import environ
+# env = environ.Env()
+# environ.Env.read_env(BASE_DIR/ '.env')
 TEMP_DIR = BASE_DIR/'Templates'
 
 
@@ -149,8 +149,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # EMAIL_HOST_USER =env('EMAIL_HOST_USER')
 # EMAIL_HOST_PASSWORD =env('EMAIL_HOST_PASSWORD')
 
-EMAIL_BACKEND = django.core.mail.backends.smtp.EmailBackend
-EMAIL_HOST =smtp.gmail.com
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST ="smtp.gmail.com"
 EMAIL_PORT =587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER ="v.kumar70760@gmail.com"
