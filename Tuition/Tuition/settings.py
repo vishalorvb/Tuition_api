@@ -1,12 +1,10 @@
 
 from pathlib import Path
 from datetime import timedelta
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
-# import environ
-# env = environ.Env()
-# environ.Env.read_env(BASE_DIR/ '.env')
+import environ
+env = environ.Env()
+environ.Env.read_env(BASE_DIR/ '.env')
 TEMP_DIR = BASE_DIR/'Templates'
 
 
