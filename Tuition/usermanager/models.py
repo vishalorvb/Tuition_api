@@ -5,7 +5,7 @@ from .manager import *
 
 
 class Role(models.Model):
-    roleId = models.IntegerField(primary_key=True)
+    roleId = models.IntegerField(primary_key=True,unique=True)
     roleName = models.CharField(max_length=55)
 
     def __str__(self):

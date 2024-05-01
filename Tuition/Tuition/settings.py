@@ -163,7 +163,7 @@ API_KEY =env('API_KEY')
 #razorpay credential
 RAZOR_KEY_ID = env('RAZOR_KEY_ID')
 RAZOR_KEY_SECRET = env('RAZOR_KEY_SECRET')
-print(DEBUG)
+
 
 
 # Azure Storage account configuration
@@ -174,3 +174,4 @@ AZURE_CONTAINER = env('AZURE_CONTAINER')
 AZURE_OVERWRITE_FILES = eval(env('AZURE_OVERWRITE_FILES'))
 
 
+INSERT_DATA = eval(env('INSERT_DATA'))
