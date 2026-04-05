@@ -11,8 +11,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(leveln
 def send_otp(phone_number):
     otp = str(random.randint(1000, 9999))
     try:
-        if settings.ENVIRONMENT_NAME == 'dev':
-            logging.info("OTP sent successfully to %s (dev mode)", phone_number)
+        if settings.ENVIRONMENT_NAME != 'prod':
+            logging.info("OTP sent successfully to %s (non-prod mode)", phone_number)
             return "1122"
         url = f"https://2factor.in/API/V1/{settings.API_KEY}/SMS/{phone_number}/{otp}"
         res = requests.get(url)
