@@ -5,19 +5,42 @@ class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         fields = fields = [
-            'Name',
-            'Gender',
-            'Experience',
-            'Location',
-            'Qualification',
-            'Subject',
+           'id',
+            'name',
+            'gender',
+            'experience',
+            'location',
+            'qualification',
+            'subject',
             'classes',
-            'About',
-            'User_id',
-            'Teaching_mode',
-            'Phone_number',
-            'Pincode',
-            'Age',
-            'Fee',
-            'Photo',
+            'about',
+            'teaching_mode',
+            'pincode',
+            'age',
+            'fee',
+            'photo',
+            'slug'
+        ]
+
+
+class TeacherSerializerWithphone(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields = fields = [
+           'id',
+            'name',
+            'phone_number',
+            'gender',
+            'experience',
+            'location',
+            'qualification',
+            'subject',
+            'classes',
+            'about',
+            'teaching_mode',
+            'pincode',
+            'age',
+            'fee',
+            'photo',
+            'slug'
         ]

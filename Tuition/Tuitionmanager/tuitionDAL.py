@@ -2,36 +2,67 @@ from .models import *
 import logging
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
                     filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
 
 
-def addTuition(posted_date, user, student_name, phone_number, course, subject, description, teaching_mode, fee,  locality, pincode=None,):
-    try:
-        new_tuition = Tuitions.objects.create(
-            posted_date=posted_date, user_id=user, student_name=student_name, phone_number=phone_number,course=course,subject=subject,description=description,teaching_mode=teaching_mode,fee=fee,pincode=pincode,locality=locality)
-        return True
-    except Exception:
-        logging.exception("add tuition in tuition DAL")
-        return False
 
-def getLatestTuition():
+#add new tuition in database
+def addTuition(posted_date, user, student_name, phone_number, 
+               course, subject, description, teaching_mode, fee, 
+               locality,slug, photo,pincode=None,):
+    
+    t = Tuitions.objects.create(
+            posted_date=posted_date, user_id=user, student_name=student_name, phone_number=phone_number,course=course,subject=subject,description=description,teaching_mode=teaching_mode,fee=fee,pincode=pincode,locality=locality,slug=slug,photo=photo)
+    print(t.id)
+    return t.id
+
+
+def getLatestTuition(pageNumber):
     try:  
-        t = Tuitions.objects.filter(status = True).order_by('-posted_date')[:10]
+        tuitions =  Tuitions.objects.filter(status=True).order_by('-posted_date','-id')
+        paginator = Paginator(tuitions, 10)
+        t = paginator.get_page(pageNumber)
+        if  pageNumber > paginator.num_pages:
+            return []
         return t
     except Exception:
         logging.exception("getlatestTuition")
         return False
+
+def searchTuition(query_words,pageNumber):
+    combined_condition = Q()
+    for word in query_words:
+        combined_condition |= Q(course__icontains=word)
+        combined_condition |= Q(subject__icontains=word)
+        combined_condition |= Q(locality__icontains=word)
+        combined_condition |= Q(slug__icontains=word)
+
+
+        combined_condition |= Q(pincode__District__contains=word)
+        combined_condition |= Q(pincode__Devision__contains=word)
         
-def getAllTuition():
+    tuitions = Tuitions.objects.filter(combined_condition).order_by('-posted_date','-id')
+    paginator = Paginator(tuitions, 10)
+    t = paginator.get_page(pageNumber)
+    if  pageNumber > paginator.num_pages:
+        return []
+    return t
+
+
+def getDetails(tuitionId):
     try:
-        t = Tuitions.objects.filter(status = True).order_by('-posted_date')[:100]
+        t = Tuitions.objects.get(id=tuitionId)
         return t
-    except Exception:
-        logging.exception("getlatestTuition")   
-        return False
+    except ObjectDoesNotExist:
+        return None
+    
+
         
+
 def IsTuitionIdExist(id):
     try:
         t = Tuitions.objects.get(id = id)
@@ -46,11 +77,13 @@ def unlockTuition(user,tuition):
     except Exception:
         return False
         
+
+
+
+# This will return True if user(userId) already unlocked the tuition (tuitionId)
 def IstuitionUserExist(userid,tutid):
     try:
         Tuition_unlock.objects.get(User_id=userid,Tuition_id = tutid)
-        logging.info("Tuition already unlocked by user")
-        logging.exception(" ") 
         return True
     except ObjectDoesNotExist:
         logging.info("Tuition Not belongs to user")
@@ -59,6 +92,22 @@ def IstuitionUserExist(userid,tutid):
         logging.info("Tuition Not belongs multiple times to user")
         return True
     
+
+# this will return True if tuition belogs to user, means the given tuition(tuitionId) is posted by user(userId) 
+def IsTuitionBelongsToUser(userid,tuitionid):
+    try:
+        Tuitions.objects.get(id=tuitionid,user_id=userid)
+        return True
+    except ObjectDoesNotExist:
+        logging.exception(" ")
+        return False
+
+
+
+  
+
+
+
 def changeStatus(tutionid):
     try:
         T = Tuitions.objects.get(id= tutionid)
@@ -75,14 +124,7 @@ def changeStatus(tutionid):
         logging.exception(" ")
         return False
     
-def IsTuitionBelongsToUser(userid,tuitionid):
-    try:
-        Tuitions.objects.filter(id=tuitionid,user_id=userid)
-        return True
-    except Exception:
-        logging.exception(" ")
-        return False
-                 
+
 def MyTuition(userid):
     try:
         return Tuitions.objects.filter(user_id=userid)                             
@@ -91,10 +133,12 @@ def MyTuition(userid):
         return None
     
 def Myunlocks(userid):
-    try:
-        t = Tuition_unlock.objects.filter(User_id=userid)
-        return t
-    except:
-        return None    
-        
+    tuition_unlocks = Tuition_unlock.objects.filter(User_id=userid)
+    tuition_ids = tuition_unlocks.values_list('Tuition_id', flat=True)
+    tuitions = Tuitions.objects.filter(id__in=tuition_ids) 
+    return tuitions
+            
+def MyPost(userId):
+    tuition_unlocks = Tuitions.objects.filter(user_id=userId)
+    return tuition_unlocks
 

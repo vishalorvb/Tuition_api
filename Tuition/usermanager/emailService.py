@@ -4,6 +4,7 @@ from django.conf import settings
 
 
 def sendVerificationLink(name,email,link):
+    print("sending Email")
     message = f'''
     Dear {name},
 

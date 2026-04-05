@@ -5,18 +5,18 @@ from .manager import *
 
 
 class Role(models.Model):
-    roleId = models.IntegerField()
+    roleId = models.IntegerField(primary_key=True,unique=True)
     roleName = models.CharField(max_length=55)
 
     def __str__(self):
-        return self.roleName
+        return str(self.roleId) +self.roleName
 
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=12 , unique=True)
     Full_name = models.CharField(max_length=55)
     email = models.EmailField(max_length=60,null=True  , blank=True)
     credit_points = models.IntegerField(default=0)
-    profilepic = models.ImageField(upload_to='profilepic',default="profilepic/profilepic.png")
+    profilepic = models.ImageField(upload_to='profilepic',default=None,null=True)
     is_teacher = models.BooleanField(default=False)
     is_email_varified = models.BooleanField(default=False)
     link_token = models.CharField(max_length=255,unique=True,null=True) 
@@ -29,7 +29,7 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.Full_name
+        return self.Full_name+"("+str(self.id)+")"
 
     object = CustomUserManager()
    

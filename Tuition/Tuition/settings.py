@@ -1,8 +1,6 @@
 
 from pathlib import Path
 from datetime import timedelta
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 import environ
 env = environ.Env()
@@ -10,12 +8,6 @@ environ.Env.read_env(BASE_DIR/ '.env')
 TEMP_DIR = BASE_DIR/'Templates'
 
 
-
-SECRET_KEY = env('SECRET_KEY')
-# DEBUG = int(env('DEBUG'))
-DEBUG = True
-ENVIRONMENT_NAME = "dev"
-URL = "http://127.0.0.1:8000/"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -27,7 +19,7 @@ REST_FRAMEWORK = {
     ],
 }
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=2),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
 }
 
@@ -37,7 +29,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    "whitenoise.runserver_nostatic",
     'django.contrib.staticfiles',
     'storages',
     'rest_framework',
@@ -49,6 +40,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -60,7 +52,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Tuition.urls'
-
+CORS_ORIGIN_ALLOW_ALL = True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -139,7 +131,25 @@ STATICFILES_DIRS =[
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# DEBUG = int(env('DEBUG'))
+
 # ''' sending email '''
+# EMAIL_BACKEND = env('EMAIL_BACKEND')
+# EMAIL_HOST =env('EMAIL_HOST')
+# EMAIL_PORT =int(env('EMAIL_PORT'))
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER =env('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD =env('EMAIL_HOST_PASSWORD')
+    
+    
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
+ENVIRONMENT_NAME = env('ENVIRONMENT_NAME')
+URL = env('URL')
+DEBUG = eval(env('DEBUG'))
+
+
+
 EMAIL_BACKEND = env('EMAIL_BACKEND')
 EMAIL_HOST =env('EMAIL_HOST')
 EMAIL_PORT =int(env('EMAIL_PORT'))
@@ -151,19 +161,17 @@ EMAIL_HOST_PASSWORD =env('EMAIL_HOST_PASSWORD')
 API_KEY =env('API_KEY')
 
 #razorpay credential
-RAZOR_KEY_ID =env('RAZOR_KEY_ID')
-RAZOR_KEY_SECRET =env('RAZOR_KEY_SECRET')
+RAZOR_KEY_ID = env('RAZOR_KEY_ID')
+RAZOR_KEY_SECRET = env('RAZOR_KEY_SECRET')
 
 
 
 # Azure Storage account configuration
-DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
-AZURE_ACCOUNT_NAME = 'profilephoto'
-AZURE_ACCOUNT_KEY = 'ZkbP9qJXCdxw+HmuuMdOKP4PulVGOGicZVxNvb14/Hj2USB3s2Cydz8x4ZJ3uj6a/mSWS8yQ78cu+AStIXYb8A=='
-AZURE_CONTAINER = 'profilepic'
-AZURE_OVERWRITE_FILES = True
+DEFAULT_FILE_STORAGE = env('DEFAULT_FILE_STORAGE')
+AZURE_ACCOUNT_NAME = env('AZURE_ACCOUNT_NAME')
+AZURE_ACCOUNT_KEY = env('AZURE_ACCOUNT_KEY')
+AZURE_CONTAINER = env('AZURE_CONTAINER')
+AZURE_OVERWRITE_FILES = eval(env('AZURE_OVERWRITE_FILES'))
 
 
-# STATICFILES_STORAGE = 'storages.backends.azure_storage.AzureStorage'
-# AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
-# STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_CONTAINER}/'
+INSERT_DATA = eval(env('INSERT_DATA'))
