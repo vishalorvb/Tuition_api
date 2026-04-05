@@ -13,55 +13,38 @@ logging.basicConfig(level=logging.INFO,format='%(asctime)s-%(process)d-%(levelna
 
 CREDIT_POINT = 6
 
-#def reSizeImage(input_image, output_size):
-#    image = Image.open(input_image)
-#    image = ImageOps.exif_transpose(image)
-#    image.thumbnail(output_size)
-#    image_io = BytesIO()
-#    image.save(image_io, format='JPEG')
-#    resized_image = InMemoryUploadedFile(
-#        image_io,
-#        None,
-#        'resized_image.jpg',
-#        'image/jpeg',
-#        image_io.tell(),
-#        None
-#    )
-#    return resized_image
 
-def saveUser(name,email,phone):
-    if IsPhoneNumberExist(phone) :
+
+def saveUser(name, email, phone):
+    if IsPhoneNumberExist(phone):
         logging.error("Phone number Already exist")
         return "Phone number Already exist"
     if IsEmailExist(email):
         logging.error("Email Already exist")
         return "Email Already exist"
-    else:
-        otp = send_otp(phone)
-        if otp:
-            link = encryption(settings.SECRET_KEY).encrypt_string(str(phone))
-            role =getRole(1)
-            AddUser(name=name, phone=phone, email=email, password=otp, points=CREDIT_POINT,link=link,role=role)
-            thread = threading.Thread(target=sendVerificationLink, args=(name,[email],link))
-            thread.start()
-            return False
-        else:
-            logging.error("Invalid Phone Number")
-            return "Invalid Phone Number"
+
+    otp = send_otp(phone)
+    if not otp:
+        logging.error("Otp sending failed")
+        return "Invalid Phone Number"
+
+    link = encryption(settings.SECRET_KEY).encrypt_string(str(phone))
+    role = getRole(1)
+    AddUser(name=name, phone=phone, email=email, password=otp, points=CREDIT_POINT, link=link, role=role)
+    threading.Thread(target=sendVerificationLink, args=(name, [email], link)).start()
+    return None
         
 def isEmailexist(email):
     return IsEmailExist(email)
 
 
-def updatePassword(phone):    
-    if IsPhoneNumberExist(phone) :
-        otp = send_otp(phone)
-        if otp:
-            return update_password(phone,otp)     
-        else:
-            return False
-    else:
-        return False     
+def updatePassword(phone):
+    if not IsPhoneNumberExist(phone):
+        return False
+    otp = send_otp(phone)
+    if not otp:
+        return False
+    return update_password(phone, otp)
 
    
 

@@ -8,19 +8,16 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(leveln
                     filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
 
 
-ENV = settings.ENVIRONMENT_NAME
-
 def send_otp(phone_number):
     otp = str(random.randint(1000, 9999))
-    print(ENV)
     try:
-        if ENV=='dev':
-            print("OTP is", "1122")
+        if settings.ENVIRONMENT_NAME == 'dev':
+            logging.info("OTP sent successfully to %s (dev mode)", phone_number)
             return "1122"
         url = f"https://2factor.in/API/V1/{settings.API_KEY}/SMS/{phone_number}/{otp}"
         res = requests.get(url)
-        print(res.status_code)
         if(res.status_code == 200):
+            logging.info("OTP sent successfully to %s", phone_number)
             return otp
         return False
     except Exception:

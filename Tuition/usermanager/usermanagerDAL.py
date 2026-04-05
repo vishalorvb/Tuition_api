@@ -11,40 +11,41 @@ def getRole(roleId):
     
 
 def IsPhoneNumberExist(phoneNumber):
-    try:
-        CustomUser.object.get(phone_number = phoneNumber)
-        return True
-    except Exception:
-        logging.exception("DAL IsphonenumberExist")
-        False
+    return CustomUser.object.filter(phone_number=phoneNumber).exists()
 
 
 def IsEmailExist(email):
-    try:
-        CustomUser.object.get(email = email)
-        return True
-    except Exception :
-        logging.exception("DAL IsEmailExist")
-        return False
+    return CustomUser.object.filter(email=email).exists()
 
-def AddUser(name,email,password,phone,points,link,role):
+
+def AddUser(name, email, password, phone, points, link, role):
     try:
-        CustomUser.object.create_user(Full_name=name, phone_number=phone, email=email, password=password, credit_points=points,link_token=link,role=role)
+        CustomUser.object.create_user(
+            Full_name=name,
+            phone_number=phone,
+            email=email,
+            password=password,
+            credit_points=points,
+            link_token=link,
+            role=role,
+        )
     except Exception:
-        logging.exception("password not update in DAL")
+        logging.exception("Failed to create user in DAL")
+        raise
         
         
-def update_password(phone,password):
+def update_password(phone, password):
     try:
-        user =  CustomUser.object.get(phone_number = phone)
+        user = CustomUser.object.get(phone_number=phone)
         user.set_password(password)
-        user.save()
-        
-        logging.info("password updated")
-        logging.info(user.phone_number)
+        user.save(update_fields=['password'])
+        logging.info("Password updated for %s", phone)
         return True
+    except ObjectDoesNotExist:
+        logging.error("User not found for phone: %s", phone)
+        return False
     except Exception:
-        logging.exception("password not update in DAL")
+        logging.exception("Failed to update password in DAL")
         return False
        
 def get_user(id):

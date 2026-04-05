@@ -30,19 +30,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(leveln
 
 @api_view(['POST'])
 def createUser(request):
-    try:
-        full_name = request.data['full_name']
-        email = request.data['email']
-        phone_number = request.data['phone_number']
-        res = saveUser(full_name, email, phone_number)
-        if res == False:
-            message = "User created successfully."
-            return Response({"message": message}, status=status.HTTP_201_CREATED)
-        else:
-            return Response({"message": res}, status=status.HTTP_400_BAD_REQUEST)
-    except KeyError as e:
-        logging.info("key error")
-        return Response({"message": "Invalid data format"}, status=status.HTTP_400_BAD_REQUEST) 
+    required_fields = ['full_name', 'email', 'phone_number']
+    missing = [f for f in required_fields if f not in request.data]
+    if missing:
+        return Response({"message": f"Missing fields: {', '.join(missing)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+    error = saveUser(request.data['full_name'], request.data['email'], request.data['phone_number'])
+    if error:
+        return Response({"message": error}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({"message": "User created successfully."}, status=status.HTTP_201_CREATED)
 
 @api_view(['PUT'])
 @authentication_classes([JWTAuthentication])
@@ -71,16 +67,13 @@ def updateProfile(request):
 
 @api_view(['POST'])
 def sendOtp(request):
-    try:
-        phone_number = request.data['phone_number']
-        if updatePassword(phone_number):
-            message = "OTP sent successfully."
-            return Response({"message": message}, status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "Invalid phone number."}, status=status.HTTP_400_BAD_REQUEST)
-    except KeyError as e:
-        logging.info("key error")
-        return Response({"message": "Invalid data format"}, status=status.HTTP_400_BAD_REQUEST) 
+    phone_number = request.data.get('phone_number')
+    if not phone_number:
+        return Response({"message": "phone_number is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if updatePassword(phone_number):
+        return Response({"message": "OTP sent successfully."}, status=status.HTTP_200_OK)
+    return Response({"message": "Invalid phone number."}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def login(request):
@@ -88,23 +81,21 @@ def login(request):
     password = request.data.get('password')
 
     if not username or not password:
-        return Response({"error": "Username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-    user =  authenticate( phone_number=username, password=password)
-
-    if user:
-        refresh = RefreshToken.for_user(user)
-        response_data = {
-            #'refresh': str(refresh),
-            'access': str(refresh.access_token),
-            'Full_name': user.Full_name,
-            'roleId': user.role.roleId,
-            'isTeacher': user.is_teacher,
-            'userId': user.id
-        }
-        return Response({"message": "Login successfull!","data":response_data}, status=status.HTTP_200_OK)
-    else:
+    user = authenticate(phone_number=username, password=password)
+    if not user:
         return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    refresh = RefreshToken.for_user(user)
+    response_data = {
+        'access': str(refresh.access_token),
+        'Full_name': user.Full_name,
+        'roleId': user.role.roleId,
+        'isTeacher': user.is_teacher,
+        'userId': user.id,
+    }
+    return Response({"message": "Login successfull!", "data": response_data}, status=status.HTTP_200_OK)
     
 
 
