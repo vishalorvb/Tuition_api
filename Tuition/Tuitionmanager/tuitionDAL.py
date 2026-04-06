@@ -21,6 +21,10 @@ def addTuition(posted_date, user, student_name, phone_number,
     return t.id
 
 
+def updateSlug(tuition_id, slug):
+    Tuitions.objects.filter(id=tuition_id).update(slug=slug)
+
+
 def getLatestTuition(pageNumber):
     try:  
         tuitions =  Tuitions.objects.filter(status=True).order_by('-posted_date','-id')
@@ -33,24 +37,34 @@ def getLatestTuition(pageNumber):
         logging.exception("getlatestTuition")
         return False
 
-def searchTuition(query_words,pageNumber):
+def searchTuition(query_words, pageNumber):
+    if not query_words:
+        return [], 0
+
     combined_condition = Q()
-    for word in query_words:
-        combined_condition |= Q(course__icontains=word)
-        combined_condition |= Q(subject__icontains=word)
-        combined_condition |= Q(locality__icontains=word)
-        combined_condition |= Q(slug__icontains=word)
+    for word in query_words[:10]:  # limit to 10 words to prevent abuse
+        word_condition = (
+            Q(course__icontains=word)
+            | Q(subject__icontains=word)
+            | Q(description__icontains=word)
+            | Q(locality__icontains=word)
+            | Q(pincode__District__icontains=word)
+            | Q(pincode__Devision__icontains=word)
+        )
+        if word.isdigit():
+            word_condition |= Q(pincode__Pincode__startswith=word)
+        combined_condition |= word_condition
 
-
-        combined_condition |= Q(pincode__District__contains=word)
-        combined_condition |= Q(pincode__Devision__contains=word)
-        
-    tuitions = Tuitions.objects.filter(combined_condition).order_by('-posted_date','-id')
+    tuitions = (
+        Tuitions.objects.filter(combined_condition, status=True)
+        .select_related('pincode')
+        .distinct()
+        .order_by('-posted_date', '-id')
+    )
     paginator = Paginator(tuitions, 10)
-    t = paginator.get_page(pageNumber)
-    if  pageNumber > paginator.num_pages:
-        return []
-    return t
+    if pageNumber > paginator.num_pages:
+        return [], paginator.num_pages
+    return paginator.get_page(pageNumber), paginator.num_pages
 
 
 def getDetails(tuitionId):

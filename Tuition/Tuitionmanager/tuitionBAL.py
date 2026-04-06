@@ -7,10 +7,14 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(leveln
 
 def saveTuition(user, student_name, phone_number, course, subject, description,photo, teaching_mode, fee, pincode=None, locality= ''):
     try:
-        slug =pincode.Devision + pincode.District #getting district for slug from pincode object
+        slug = pincode.Devision + pincode.District
         slug = slug + '-' + course.split()[0] + '-' + subject.split()[0] + '-' + locality.split()[0]
         posted_date = date.today()
-        return addTuition(posted_date, user, student_name, phone_number, course, subject, description, teaching_mode, fee,locality,slug, photo,pincode)
+        tuition_id = addTuition(posted_date, user, student_name, phone_number, course, subject, description, teaching_mode, fee,locality,slug, photo,pincode)
+        if tuition_id:
+            slug = slug + '-' + str(tuition_id)
+            updateSlug(tuition_id, slug)
+        return tuition_id
     except Exception:
         logging.exception("saveTuition in tuitionBAL")
         return False
@@ -22,8 +26,11 @@ def get_latest_tuition(pageNumber):
 
 
 
-def search_tuitions(words,pageNumber):
-    return searchTuition(words,pageNumber)
+def search_tuitions(words, pageNumber):
+    query_words = [w for w in words if len(w) >= 2]  # ignore single-char words
+    if not query_words:
+        return [], 0
+    return searchTuition(query_words, pageNumber)
 
 
 

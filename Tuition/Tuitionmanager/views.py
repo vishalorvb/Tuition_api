@@ -112,12 +112,14 @@ def get_tution_byId(request,tuitionId):
 
 @api_view(['GET'])
 def search(request,pageNumber):
-    query = request.query_params.get('query', '')
-     # Split the query into individual words
-    query_words = query.split()
+    query = request.query_params.get('query', '').strip()
+    if not query:
+        return Response({"message": "Query is required.", "data": [], "totalPages": 0}, status=status.HTTP_400_BAD_REQUEST)
 
-    t = search_tuitions(query_words,pageNumber)
-    return Response({"message": "Search result.", "data": TuitionsSerializer_withPhone(t,many=True).data}, status=status.HTTP_200_OK) # change it to without phone number in next release
+    query_words = query.split()
+    tuitions, total_pages = search_tuitions(query_words, pageNumber)
+    data = TuitionsSerializer(tuitions, many=True).data if tuitions else []
+    return Response({"message": "Search result.", "data": data, "totalPages": total_pages}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
