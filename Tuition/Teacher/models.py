@@ -1,11 +1,11 @@
 from django.db import models
 from usermanager.models import CustomUser
-from datetime import datetime 
+from django.utils import timezone
 from Home.models import pincodes
 
 
 class Teacher(models.Model):
-    join_date = models.DateField(default=datetime.now)
+    join_date = models.DateField(default=timezone.now)
     name = models.CharField(max_length=20)
     gender = models.CharField(max_length=10)
     experience = models.IntegerField()
@@ -32,7 +32,7 @@ class Teacher(models.Model):
 class Teacher_unlock(models.Model):
     Teacher_id = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     User_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    unlock_date = models.DateField(default=datetime.now)
+    unlock_date = models.DateField(default=timezone.now)
     
     def __str__(self):
         return self.Teacher_id.Name
