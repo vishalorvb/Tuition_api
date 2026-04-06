@@ -10,8 +10,7 @@ from .serializer import TuitionsSerializer,TuitionsSerializer_withPhone
 from utility.ResizeImage import reSizeImage
 
 import logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
-                    filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
+logger = logging.getLogger(__name__)
 
 
         

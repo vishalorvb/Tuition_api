@@ -2,7 +2,7 @@ from .tuitionDAL import *
 from datetime import date
 from Home.HomeDAL import isPincode
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
-                    filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
+                    datefmt='%d-%b-%y %H:%M:%S')
 
 
 def saveTuition(user, student_name, phone_number, course, subject, description,photo, teaching_mode, fee, pincode=None, locality= ''):
