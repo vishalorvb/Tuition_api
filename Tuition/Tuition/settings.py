@@ -1,11 +1,15 @@
 
 from pathlib import Path
 from datetime import timedelta
+import os
+
 BASE_DIR = Path(__file__).resolve().parent.parent
-import environ
-env = environ.Env()
-environ.Env.read_env(BASE_DIR/ '.env')
 TEMP_DIR = BASE_DIR/'Templates'
+
+# In dev, load .env file; in prod, read from OS environment
+if os.environ.get('ENVIRONMENT_NAME') != 'prod':
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR / '.env')
 
 
 
@@ -93,11 +97,11 @@ WSGI_APPLICATION = 'Tuition.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
+        'NAME': os.environ.get('DB_NAME', 'postgres'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
@@ -146,36 +150,35 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # EMAIL_HOST_PASSWORD =env('EMAIL_HOST_PASSWORD')
     
     
-SECRET_KEY = env('SECRET_KEY')
-DEBUG = env('DEBUG')
-ENVIRONMENT_NAME = env('ENVIRONMENT_NAME')
-URL = env('URL')
-DEBUG = eval(env('DEBUG'))
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
+ENVIRONMENT_NAME = os.environ.get('ENVIRONMENT_NAME', 'dev')
+URL = os.environ.get('URL', 'http://localhost:8000')
 
 
 
-EMAIL_BACKEND = env('EMAIL_BACKEND')
-EMAIL_HOST =env('EMAIL_HOST')
-EMAIL_PORT =int(env('EMAIL_PORT'))
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER =env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD =env('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
 # 2factor api secret key 
-API_KEY =env('API_KEY')
+API_KEY = os.environ.get('API_KEY', '')
 
 #razorpay credential
-RAZOR_KEY_ID = env('RAZOR_KEY_ID')
-RAZOR_KEY_SECRET = env('RAZOR_KEY_SECRET')
+RAZOR_KEY_ID = os.environ.get('RAZOR_KEY_ID', '')
+RAZOR_KEY_SECRET = os.environ.get('RAZOR_KEY_SECRET', '')
 
 
 
 # Azure Storage account configuration
-DEFAULT_FILE_STORAGE = env('DEFAULT_FILE_STORAGE')
-AZURE_ACCOUNT_NAME = env('AZURE_ACCOUNT_NAME')
-AZURE_ACCOUNT_KEY = env('AZURE_ACCOUNT_KEY')
-AZURE_CONTAINER = env('AZURE_CONTAINER')
-AZURE_OVERWRITE_FILES = eval(env('AZURE_OVERWRITE_FILES'))
+DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE', 'django.core.files.storage.FileSystemStorage')
+AZURE_ACCOUNT_NAME = os.environ.get('AZURE_ACCOUNT_NAME', '')
+AZURE_ACCOUNT_KEY = os.environ.get('AZURE_ACCOUNT_KEY', '')
+AZURE_CONTAINER = os.environ.get('AZURE_CONTAINER', '')
+AZURE_OVERWRITE_FILES = os.environ.get('AZURE_OVERWRITE_FILES', 'False').lower() in ('true', '1', 'yes')
 
 
-INSERT_DATA = eval(env('INSERT_DATA'))
+INSERT_DATA = os.environ.get('INSERT_DATA', 'False').lower() in ('true', '1', 'yes')
