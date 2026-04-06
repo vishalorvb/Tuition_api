@@ -105,24 +105,35 @@ def TeacherDetails(teacherId):
         return None
 
 
-def searchTuition(query_words,pageNumber):
+def searchTeacher(query_words, pageNumber):
+    if not query_words:
+        return [], 0
+
     combined_condition = Q()
-    for word in query_words:
-        combined_condition |= Q(classes__icontains=word)
-        combined_condition |= Q(subject__icontains=word)
-        combined_condition |= Q(location__icontains=word)
-        combined_condition |= Q(slug__icontains=word)
+    for word in query_words[:10]:
+        word_condition = (
+            Q(classes__icontains=word)
+            | Q(subject__icontains=word)
+            | Q(location__icontains=word)
+            | Q(about__icontains=word)
+            | Q(qualification__icontains=word)
+            | Q(pincode__District__icontains=word)
+            | Q(pincode__Devision__icontains=word)
+        )
+        if word.isdigit():
+            word_condition |= Q(pincode__Pincode__startswith=word)
+        combined_condition |= word_condition
 
-
-        combined_condition |= Q(pincode__District__contains=word)
-        combined_condition |= Q(pincode__Devision__contains=word)
-        
-    teacher = Teacher.objects.filter(combined_condition)
-    paginator = Paginator(teacher, 10)
-    t = paginator.get_page(pageNumber)
-    if  pageNumber > paginator.num_pages:
-        return []
-    return t
+    teachers = (
+        Teacher.objects.filter(combined_condition, status=True)
+        .select_related('pincode')
+        .distinct()
+        .order_by('-join_date', '-id')
+    )
+    paginator = Paginator(teachers, 10)
+    if pageNumber > paginator.num_pages:
+        return [], paginator.num_pages
+    return paginator.get_page(pageNumber), paginator.num_pages
 
 
 def MyTeacher(userId):

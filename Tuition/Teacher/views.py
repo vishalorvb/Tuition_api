@@ -135,11 +135,14 @@ def get_Teacher_ById(request,teacherId):
 
 @api_view(['GET'])
 def search(request,pageNumber):
-    query = request.query_params.get('query', '')
-     # Split the query into individual words
+    query = request.query_params.get('query', '').strip()
+    if not query:
+        return Response({"message": "Query is required.", "data": [], "totalPages": 0}, status=status.HTTP_400_BAD_REQUEST)
+
     query_words = query.split()
-    t = search_Teacher(query_words,pageNumber)
-    return Response({"message": "Authenticated user.", "data": TeacherSerializer(t,many=True).data}, status=status.HTTP_200_OK)
+    teachers, total_pages = search_Teacher(query_words, pageNumber)
+    data = TeacherSerializer(teachers, many=True).data if teachers else []
+    return Response({"message": "Search result.", "data": data, "totalPages": total_pages}, status=status.HTTP_200_OK)
 
 
 

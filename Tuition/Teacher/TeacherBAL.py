@@ -63,8 +63,11 @@ def canPhoneNumber(user,teacherId):
         return True
     return False
 
-def search_Teacher(query_words,pageNumber):
-    return searchTuition(query_words,pageNumber)
+def search_Teacher(query_words, pageNumber):
+    query_words = [w for w in query_words if len(w) >= 2]
+    if not query_words:
+        return [], 0
+    return searchTeacher(query_words, pageNumber)
 
 def unlockedTeacher(userId):
     return MyTeacher(userId)
