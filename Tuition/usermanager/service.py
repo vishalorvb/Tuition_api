@@ -14,13 +14,13 @@ def send_otp(phone_number):
         if settings.ENVIRONMENT_NAME != 'prod':
             logging.info("OTP sent successfully to %s (non-prod mode)", phone_number)
             return "1122"
-        url = f"https://2factor.in/API/V1/{settings.API_KEY}/SMS/{phone_number}/{otp}"
+        url = f"https://2factor.in/API/V1/{settings.API_KEY}/SMS/{phone_number}/{otp}/general"
         res = requests.get(url)
         if(res.status_code == 200):
             logging.info("OTP sent successfully to %s", phone_number)
             return otp
         return False
-    except Exception:
+    except Exception: 
         logging.error("OTP is not Sent")
         logging.exception("Error in otp service")
         return False

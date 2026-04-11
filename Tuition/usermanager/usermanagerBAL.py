@@ -46,6 +46,12 @@ def updatePassword(phone):
         return False
     return update_password(phone, otp)
 
+def sendRegistrationOtp(phone):
+    if IsPhoneNumberExist(phone):
+        return False
+    otp = send_otp(phone)
+    return otp if otp else False
+
    
 
 
