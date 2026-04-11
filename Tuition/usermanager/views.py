@@ -68,18 +68,10 @@ def updateProfile(request):
 @api_view(['POST'])
 def sendOtp(request):
     phone_number = request.data.get('phone_number')
-    otp_type = request.data.get('type', 'login')
     if not phone_number:
         return Response({"message": "phone_number is required"}, status=status.HTTP_400_BAD_REQUEST)
-    if otp_type not in ('registration', 'login'):
-        return Response({"message": "type must be 'registration' or 'login'"}, status=status.HTTP_400_BAD_REQUEST)
 
-    if otp_type == 'registration':
-        result = sendRegistrationOtp(phone_number)
-    else:
-        result = updatePassword(phone_number)
-
-    if result:
+    if updatePassword(phone_number):
         return Response({"message": "OTP sent successfully."}, status=status.HTTP_200_OK)
     return Response({"message": "Invalid phone number."}, status=status.HTTP_400_BAD_REQUEST)
 
