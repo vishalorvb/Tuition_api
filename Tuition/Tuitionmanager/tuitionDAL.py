@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
-                    filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
+                    datefmt='%d-%b-%y %H:%M:%S')
 
 
 

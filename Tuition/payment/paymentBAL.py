@@ -4,7 +4,7 @@ from .paymentDAL import *
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
-                    filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
+                    datefmt='%d-%b-%y %H:%M:%S')
 
 
 razorpay_client = razorpay.Client(

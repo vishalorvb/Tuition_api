@@ -6,7 +6,7 @@ from usermanager.usermanagerDAL import change_user_teacher_status
 from django.core.paginator import Paginator
 from django.db.models import Q
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
-                    filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
+                    datefmt='%d-%b-%y %H:%M:%S')
 
 
 def IsUserTeacher(userid):

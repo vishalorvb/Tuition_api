@@ -20,7 +20,7 @@ from django.http import HttpResponse, HttpResponseRedirect,HttpResponseBadReques
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
-                    filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
+                    datefmt='%d-%b-%y %H:%M:%S')
 
 
 

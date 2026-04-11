@@ -1,7 +1,7 @@
 from .models import *
 import logging
 from django.core.exceptions import ObjectDoesNotExist
-logging.basicConfig(level=logging.INFO,format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',filename='../info.log', filemode='a',datefmt='%d-%b-%y %H:%M:%S')
+logging.basicConfig(level=logging.INFO,format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',datefmt='%d-%b-%y %H:%M:%S')
 
 def getRole(roleId):
     try:

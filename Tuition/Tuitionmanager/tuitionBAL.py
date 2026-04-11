@@ -1,15 +1,15 @@
 from .tuitionDAL import *
-from datetime import date
+from django.utils import timezone
 from Home.HomeDAL import isPincode
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
-                    filename='../info.log', filemode='a', datefmt='%d-%b-%y %H:%M:%S')
+                    datefmt='%d-%b-%y %H:%M:%S')
 
 
 def saveTuition(user, student_name, phone_number, course, subject, description,photo, teaching_mode, fee, pincode=None, locality= ''):
     try:
         slug = pincode.Devision + pincode.District
         slug = slug + '-' + course.split()[0] + '-' + subject.split()[0] + '-' + locality.split()[0]
-        posted_date = date.today()
+        posted_date = timezone.now()
         tuition_id = addTuition(posted_date, user, student_name, phone_number, course, subject, description, teaching_mode, fee,locality,slug, photo,pincode)
         if tuition_id:
             slug = slug + '-' + str(tuition_id)
