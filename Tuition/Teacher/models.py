@@ -15,7 +15,7 @@ class Teacher(models.Model):
     classes = models.CharField(max_length=30)
     about = models.CharField(max_length=300)
     #User_id = models.ForeignKey(CustomUser, on_delete=models.DO_NOTHING)
-    user_id = models.OneToOneField(CustomUser, on_delete=models.DO_NOTHING, unique=True)
+    user_id = models.ForeignKey(CustomUser, on_delete=models.DO_NOTHING)
     status = models.BooleanField(default=False)
     teaching_mode = models.CharField(max_length=10)
     phone_number = models.CharField(max_length=12)
