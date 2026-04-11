@@ -12,5 +12,6 @@ urlpatterns = [
     path('getTeacherById/<int:teacherId>', views.get_Teacher_ById, name='teacherById'),
     path('search/<int:pageNumber>/', views.search, name='searchTeacher'),
     re_path('unlockedteacher', views.unlocked_teacher, name='unlockedteacher'),
+    path('my-teacher-profile/', views.get_my_teacher_profile, name='get_my_teacher_profile'),
 ]
 

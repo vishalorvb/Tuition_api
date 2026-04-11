@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .TeacherBAL import *
+from .TeacherBAL import get_my_teacher_by_userid
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -21,10 +22,10 @@ from utility.ResizeImage import reSizeImage
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def create_teacher(request):
-    Teacher = is_user_teacher(request.user.id)
+    # Teacher = is_user_teacher(request.user.id)
     user = request.user
-    if Teacher:
-        return Response({"message": "Already Exists."}, status=status.HTTP_400_BAD_REQUEST)
+    # if Teacher:
+    #     return Response({"message": "Already Exists."}, status=status.HTTP_400_BAD_REQUEST)
     try:
         image_file = request.FILES.get('photo', None)
         if image_file is not None:
@@ -152,3 +153,12 @@ def search(request,pageNumber):
 def unlocked_teacher(request):
     teacher = unlockedTeacher(request.user.id)
     return Response({"message": "Authenticated user.", "data": TeacherSerializerWithphone(teacher,many=True).data}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def get_my_teacher_profile(request):
+    teachers = get_my_teacher_by_userid(request.user.id)
+    serializer = TeacherSerializer(teachers, many=True)
+    return Response({"teachers": serializer.data}, status=status.HTTP_200_OK)

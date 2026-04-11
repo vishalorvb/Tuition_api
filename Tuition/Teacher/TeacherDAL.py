@@ -141,3 +141,7 @@ def MyTeacher(userId):
     teacher_ids = teacher_unlocks.values_list('Teacher_id', flat=True)
     tuitions = Teacher.objects.filter(id__in=teacher_ids) 
     return tuitions
+
+# DAL function to get all teachers for a user id
+def getTeachersByUserId(user_id):
+    return Teacher.objects.filter(user_id=user_id)

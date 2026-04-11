@@ -71,3 +71,6 @@ def search_Teacher(query_words, pageNumber):
 
 def unlockedTeacher(userId):
     return MyTeacher(userId)
+
+def get_my_teacher_by_userid(user_id):
+    return getTeachersByUserId(user_id)
