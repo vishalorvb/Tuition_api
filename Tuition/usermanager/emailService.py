@@ -1,10 +1,12 @@
 from .service import send_Email
 from django.conf import settings
+import logging
 
+logger = logging.getLogger(__name__)
 
 
 def sendVerificationLink(name,email,link):
-    print("sending Email")
+    logger.info("sendVerificationLink: Preparing verification email for %s", email)
     message = f'''
     Dear {name},
 
@@ -15,3 +17,4 @@ def sendVerificationLink(name,email,link):
     Home Tution
     '''
     send_Email('Account Verification',message,email)
+    logger.info("sendVerificationLink: Verification email sent to %s", email)
