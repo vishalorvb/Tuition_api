@@ -2,6 +2,7 @@ from django.db import models
 from usermanager.models import CustomUser
 from datetime import date
 from Home.models import pincodes
+from django.contrib.postgres.indexes import GinIndex
 
 class Tuitions(models.Model):
     posted_date = models.DateField(default=date.today)
@@ -20,9 +21,15 @@ class Tuitions(models.Model):
     verify = models.BooleanField(default=False)
     slug = models.CharField(max_length=250, null=True, blank=True)
     photo = models.ImageField(upload_to = 'tuitionphoto/',null=True,default=None)
-    
 
-
+    class Meta:
+        indexes = [
+            GinIndex(
+                name='tuition_trgm_idx',
+                fields=['subject', 'course', 'locality'],
+                opclasses=['gin_trgm_ops', 'gin_trgm_ops', 'gin_trgm_ops'],
+            ),
+        ]
 
     def __str__(self):
         return self.student_name + self.phone_number

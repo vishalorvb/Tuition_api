@@ -131,13 +131,13 @@ def get_tution_byId(request, tuitionId):
 @api_view(['GET'])
 def search(request, pageNumber):
     query = request.query_params.get('query', '').strip()
-    logger.info("search: Request received query='%s' page=%s", query, pageNumber)
-    if not query:
-        logger.warning("search: Empty query")
-        return Response({"message": "Query is required.", "data": [], "totalPages": 0}, status=status.HTTP_400_BAD_REQUEST)
+    location = request.query_params.get('location', '').strip()
+    logger.info("search: Request received query='%s' location='%s' page=%s", query, location, pageNumber)
+    if not query and not location:
+        logger.warning("search: Empty query and location")
+        return Response({"message": "Query or location is required.", "data": [], "totalPages": 0}, status=status.HTTP_400_BAD_REQUEST)
 
-    query_words = query.split()
-    tuitions, total_pages = search_tuitions(query_words, pageNumber)
+    tuitions, total_pages = search_tuitions(query, location, pageNumber)
     data = TuitionsSerializer(tuitions, many=True).data if tuitions else []
     logger.info("search: Returning %s results, totalPages=%s", len(data), total_pages)
     return Response({"message": "Search result.", "data": data, "totalPages": total_pages}, status=status.HTTP_200_OK)
