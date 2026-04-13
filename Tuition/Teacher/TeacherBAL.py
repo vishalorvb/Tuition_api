@@ -75,13 +75,31 @@ def canPhoneNumber(user, teacherId):
     logger.info("canPhoneNumber: Access denied")
     return False
 
-def search_Teacher(query_words, pageNumber):
-    logger.info("search_Teacher: Searching words=%s page=%s", query_words, pageNumber)
-    query_words = [w for w in query_words if len(w) >= 2]
-    if not query_words:
-        logger.warning("search_Teacher: No valid query words")
+STOP_WORDS = {
+    'tuition', 'tuitions', 'tution', 'tutions', 'tutorial', 'teacher', 'teachers',
+    'in', 'at', 'on', 'for', 'the', 'a', 'an', 'of', 'to', 'and', 'or', 'is',
+    'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do',
+    'does', 'did', 'will', 'would', 'shall', 'should', 'may', 'might', 'can',
+    'could', 'need', 'want', 'near', 'nearby', 'around', 'from', 'with', 'by',
+    'me', 'my', 'i', 'we', 'our', 'best', 'good', 'top', 'find', 'get',
+    'looking', 'search', 'home',
+}
+
+
+def clean_query(raw_query):
+    words = raw_query.lower().split()
+    return [w for w in words if w not in STOP_WORDS]
+
+
+def search_Teacher(query, location, pageNumber):
+    logger.info("search_Teacher: query='%s' location='%s' page=%s", query, location, pageNumber)
+    query_keywords = clean_query(query) if query else []
+    location_keywords = clean_query(location) if location else []
+    logger.info("search_Teacher: query_keywords=%s location_keywords=%s", query_keywords, location_keywords)
+    if not query_keywords and not location_keywords:
+        logger.warning("search_Teacher: No valid keywords")
         return [], 0
-    return searchTeacher(query_words, pageNumber)
+    return searchTeacher(query_keywords, location_keywords, pageNumber)
 
 def unlockedTeacher(userId):
     logger.info("unlockedTeacher: Fetching unlocked teachers for userId=%s", userId)

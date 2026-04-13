@@ -2,6 +2,7 @@ from django.db import models
 from usermanager.models import CustomUser
 from django.utils import timezone
 from Home.models import pincodes
+from django.contrib.postgres.indexes import GinIndex
 
 
 class Teacher(models.Model):
@@ -24,6 +25,15 @@ class Teacher(models.Model):
     fee = models.CharField(max_length=5, default=0)
     photo = models.ImageField(upload_to = 'teacherphotos/',null=True,default=None)
     slug = models.CharField(max_length=250, null=True, blank=True)
+
+    class Meta:
+        indexes = [
+            GinIndex(
+                name='teacher_trgm_idx',
+                fields=['subject', 'classes', 'location', 'qualification'],
+                opclasses=['gin_trgm_ops', 'gin_trgm_ops', 'gin_trgm_ops', 'gin_trgm_ops'],
+            ),
+        ]
 
     def __str__(self):
         return self.name

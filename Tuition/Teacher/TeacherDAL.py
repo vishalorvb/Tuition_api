@@ -4,7 +4,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
 from usermanager.usermanagerDAL import change_user_teacher_status
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Value, FloatField
+from django.db.models.functions import Greatest
+from django.contrib.postgres.search import TrigramSimilarity
+from Home.models import pincodes
 logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(process)d-%(levelname)s-%(message)s',
                     datefmt='%d-%b-%y %H:%M:%S')
 
@@ -126,38 +129,105 @@ def TeacherDetails(teacherId):
         return None
 
 
-def searchTeacher(query_words, pageNumber):
-    logger.info("searchTeacher: Searching words=%s page=%s", query_words, pageNumber)
-    if not query_words:
+def searchTeacher(query_keywords, location_keywords, pageNumber):
+    logger.info("searchTeacher: query=%s location=%s page=%s", query_keywords, location_keywords, pageNumber)
+    if not query_keywords and not location_keywords:
         return [], 0
 
-    combined_condition = Q()
-    for word in query_words[:10]:
-        word_condition = (
-            Q(classes__icontains=word)
-            | Q(subject__icontains=word)
-            | Q(location__icontains=word)
-            | Q(about__icontains=word)
-            | Q(qualification__icontains=word)
-            | Q(pincode__District__icontains=word)
-            | Q(pincode__Devision__icontains=word)
-        )
-        if word.isdigit():
-            word_condition |= Q(pincode__Pincode__startswith=word)
-        combined_condition |= word_condition
+    # Step 1: Search location keywords against pincode fields
+    pincode_scores = {}
+    if location_keywords:
+        for word in location_keywords:
+            pincode_hits = pincodes.objects.annotate(
+                sim=Greatest(
+                    TrigramSimilarity('District', word),
+                    TrigramSimilarity('Devision', word),
+                    TrigramSimilarity('State', word),
+                    TrigramSimilarity('Taluk', word),
+                    TrigramSimilarity('Region', word),
+                    output_field=FloatField(),
+                )
+            ).filter(sim__gte=0.3).values_list('Pincode', 'sim')
+            for pk, sim in pincode_hits:
+                pincode_scores[pk] = max(pincode_scores.get(pk, 0), sim)
+        logger.info("searchTeacher: Matched %s pincodes", len(pincode_scores))
 
-    teachers = (
-        Teacher.objects.filter(combined_condition, status=True)
-        .select_related('pincode')
-        .distinct()
-        .order_by('-join_date', '-id')
-    )
-    paginator = Paginator(teachers, 10)
-    if pageNumber > paginator.num_pages:
-        logger.warning("searchTeacher: Page %s exceeds total %s", pageNumber, paginator.num_pages)
-        return [], paginator.num_pages
-    logger.info("searchTeacher: Found results, returning page %s of %s", pageNumber, paginator.num_pages)
-    return paginator.get_page(pageNumber), paginator.num_pages
+    # Step 2: Search query keywords against teacher fields
+    teacher_scores = {}
+    if query_keywords:
+        for word in query_keywords:
+            teacher_hits = Teacher.objects.filter(status=True).annotate(
+                sim=Greatest(
+                    TrigramSimilarity('subject', word),
+                    TrigramSimilarity('classes', word),
+                    TrigramSimilarity('location', word),
+                    TrigramSimilarity('qualification', word),
+                    output_field=FloatField(),
+                )
+            ).filter(sim__gte=0.3).values_list('id', 'sim')
+            for tid, sim in teacher_hits:
+                teacher_scores[tid] = max(teacher_scores.get(tid, 0), sim)
+        logger.info("searchTeacher: Matched %s teachers by query", len(teacher_scores))
+
+    # Step 3: Combine results
+    if query_keywords and location_keywords:
+        if not pincode_scores or not teacher_scores:
+            return [], 0
+        pincode_teacher_ids = set(
+            Teacher.objects.filter(status=True, pincode__Pincode__in=list(pincode_scores.keys()))
+            .values_list('id', flat=True)
+        )
+        matching_ids = set(teacher_scores.keys()) & pincode_teacher_ids
+        if not matching_ids:
+            return [], 0
+
+        final_scores = {}
+        pincode_map = dict(
+            Teacher.objects.filter(id__in=matching_ids)
+            .values_list('id', 'pincode__Pincode')
+        )
+        for tid in matching_ids:
+            score = teacher_scores.get(tid, 0)
+            pk = pincode_map.get(tid)
+            if pk and pk in pincode_scores:
+                score += pincode_scores[pk]
+            final_scores[tid] = score
+
+    elif query_keywords:
+        final_scores = teacher_scores
+
+    else:
+        if not pincode_scores:
+            return [], 0
+        pincode_teachers = Teacher.objects.filter(
+            status=True, pincode__Pincode__in=list(pincode_scores.keys())
+        ).values_list('id', 'pincode__Pincode')
+        final_scores = {}
+        for tid, pk in pincode_teachers:
+            final_scores[tid] = pincode_scores.get(pk, 0)
+
+    if not final_scores:
+        return [], 0
+
+    # Step 4: Sort by relevance score descending
+    sorted_ids = sorted(final_scores.keys(), key=lambda tid: final_scores[tid], reverse=True)
+
+    # Step 5: Paginate
+    page_size = 20
+    total_pages = (len(sorted_ids) + page_size - 1) // page_size
+    if pageNumber > total_pages:
+        logger.warning("searchTeacher: Page %s exceeds total %s", pageNumber, total_pages)
+        return [], total_pages
+
+    start = (pageNumber - 1) * page_size
+    end = start + page_size
+    page_ids = sorted_ids[start:end]
+
+    teachers_map = {t.id: t for t in Teacher.objects.filter(id__in=page_ids).select_related('pincode')}
+    teachers = [teachers_map[tid] for tid in page_ids if tid in teachers_map]
+
+    logger.info("searchTeacher: Returning page %s of %s, total=%s", pageNumber, total_pages, len(sorted_ids))
+    return teachers, total_pages
 
 
 def MyTeacher(userId):

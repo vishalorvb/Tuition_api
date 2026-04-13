@@ -159,13 +159,13 @@ def get_Teacher_ById(request, teacherId):
 @api_view(['GET'])
 def search(request, pageNumber):
     query = request.query_params.get('query', '').strip()
-    logger.info("search: Request received query='%s' page=%s", query, pageNumber)
-    if not query:
-        logger.warning("search: Empty query")
-        return Response({"message": "Query is required.", "data": [], "totalPages": 0}, status=status.HTTP_400_BAD_REQUEST)
+    location = request.query_params.get('location', '').strip()
+    logger.info("search: Request received query='%s' location='%s' page=%s", query, location, pageNumber)
+    if not query and not location:
+        logger.warning("search: Empty query and location")
+        return Response({"message": "Query or location is required.", "data": [], "totalPages": 0}, status=status.HTTP_400_BAD_REQUEST)
 
-    query_words = query.split()
-    teachers, total_pages = search_Teacher(query_words, pageNumber)
+    teachers, total_pages = search_Teacher(query, location, pageNumber)
     data = TeacherSerializer(teachers, many=True).data if teachers else []
     logger.info("search: Returning %s results, totalPages=%s", len(data), total_pages)
     return Response({"message": "Search result.", "data": data, "totalPages": total_pages}, status=status.HTTP_200_OK)
