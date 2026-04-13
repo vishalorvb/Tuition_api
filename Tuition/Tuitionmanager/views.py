@@ -8,6 +8,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .serializer import TuitionsSerializer,TuitionsSerializer_withPhone
 from utility.ResizeImage import reSizeImage
+from django.views.decorators.cache import cache_page
 
 import logging
 logger = logging.getLogger(__name__)
@@ -104,6 +105,7 @@ def changeStatus(request):
 
 
 @api_view(['GET'])
+@cache_page(60 * 2)
 def getLatestTuition(request, pageNumber):
     logger.info("getLatestTuition: Request received page=%s", pageNumber)
     tuition = get_latest_tuition(pageNumber)

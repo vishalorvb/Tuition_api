@@ -29,6 +29,10 @@ class Tuitions(models.Model):
                 fields=['subject', 'course', 'locality'],
                 opclasses=['gin_trgm_ops', 'gin_trgm_ops', 'gin_trgm_ops'],
             ),
+            models.Index(
+                name='tuition_user_date_idx',
+                fields=['user_id', '-posted_date', '-id'],
+            ),
         ]
 
     def __str__(self):

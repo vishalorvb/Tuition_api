@@ -120,4 +120,4 @@ def unlockedTuitionBAL(userId):
 
 def userPost(userId):
     logger.info("userPost: Fetching posted tuitions for userId=%s", userId)
-    return MyPost(userId)
+    return Tuitions.objects.filter(user_id=userId).select_related('pincode').order_by('-posted_date', '-id')

@@ -12,11 +12,4 @@ urlpatterns = [
     path('getmypostedTuition', views.userPostedTuition, name='userpost'),
 
 
-
-    #using re_path 
-    #re_path(r'^/getTuitionByid/(?P<tuitionId>\d+)/$', views.get_tution_byId, name='tuitionByid'),
-
-
-
-
 ]

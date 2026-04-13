@@ -33,7 +33,7 @@ def getLatestTuition(pageNumber):
     try:
         logger.info("getLatestTuition: Fetching page=%s", pageNumber)
         tuitions = Tuitions.objects.filter(status=True).order_by('-posted_date', '-id')
-        paginator = Paginator(tuitions, 10)
+        paginator = Paginator(tuitions, 20)
         t = paginator.get_page(pageNumber)
         if pageNumber > paginator.num_pages:
             logger.warning("getLatestTuition: Page %s exceeds total %s", pageNumber, paginator.num_pages)
@@ -131,7 +131,7 @@ def searchTuition(query_keywords, location_keywords, pageNumber):
     sorted_ids = sorted(final_scores.keys(), key=lambda tid: final_scores[tid], reverse=True)
 
     # Step 5: Paginate
-    page_size = 10
+    page_size = 20
     total_pages = (len(sorted_ids) + page_size - 1) // page_size
     if pageNumber > total_pages:
         logger.warning("searchTuition: Page %s exceeds total %s", pageNumber, total_pages)
