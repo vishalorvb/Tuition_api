@@ -49,103 +49,65 @@ def searchTuition(query_keywords, location_keywords, pageNumber):
     if not query_keywords and not location_keywords:
         return [], 0
 
-    # Step 1: Search location keywords against pincode fields only
-    pincode_scores = {}
-    if location_keywords:
-        for word in location_keywords:
-            pincode_hits = pincodes.objects.annotate(
-                sim=Greatest(
-                    TrigramSimilarity('District', word),
-                    TrigramSimilarity('Devision', word),
-                    TrigramSimilarity('State', word),
-                    TrigramSimilarity('Taluk', word),
-                    TrigramSimilarity('Region', word),
-                    output_field=FloatField(),
-                )
-            ).filter(sim__gte=0.3).values_list('Pincode', 'sim')
-            for pk, sim in pincode_hits:
-                pincode_scores[pk] = max(pincode_scores.get(pk, 0), sim)
-        logger.info("searchTuition: Matched %s pincodes", len(pincode_scores))
+    # --- Step 1: Build Q objects for all keywords ---
+    tuition_q = Q(status=True)
+    trigram_exprs = []
 
-    # Step 2: Search query keywords against tuition fields only
-    tuition_scores = {}
+    # For query keywords (subject, course, locality)
     if query_keywords:
         for word in query_keywords:
-            tuition_hits = Tuitions.objects.filter(status=True).annotate(
-                sim=Greatest(
-                    TrigramSimilarity('subject', word),
-                    TrigramSimilarity('course', word),
-                    TrigramSimilarity('locality', word),
-                    output_field=FloatField(),
-                )
-            ).filter(sim__gte=0.3).values_list('id', 'sim')
-            for tid, sim in tuition_hits:
-                tuition_scores[tid] = max(tuition_scores.get(tid, 0), sim)
-        logger.info("searchTuition: Matched %s tuitions by query", len(tuition_scores))
+            trigram_exprs.append(TrigramSimilarity('subject', word))
+            trigram_exprs.append(TrigramSimilarity('course', word))
+            trigram_exprs.append(TrigramSimilarity('locality', word))
 
-    # Step 3: Combine results based on what params were provided
-    if query_keywords and location_keywords:
-        # Both provided: intersect — tuitions must match query AND be in matched pincodes
-        if not pincode_scores or not tuition_scores:
-            return [], 0
-        pincode_tuition_ids = set(
-            Tuitions.objects.filter(status=True, pincode__Pincode__in=list(pincode_scores.keys()))
-            .values_list('id', flat=True)
-        )
-        matching_ids = set(tuition_scores.keys()) & pincode_tuition_ids
-        if not matching_ids:
-            return [], 0
+    # For location keywords (locality field only)
+    if location_keywords:
+        for word in location_keywords:
+            trigram_exprs.append(TrigramSimilarity('locality', word))
 
-        # Score = tuition field score + pincode score
-        final_scores = {}
-        pincode_map = dict(
-            Tuitions.objects.filter(id__in=matching_ids)
-            .values_list('id', 'pincode__Pincode')
-        )
-        for tid in matching_ids:
-            score = tuition_scores.get(tid, 0)
-            pk = pincode_map.get(tid)
-            if pk and pk in pincode_scores:
-                score += pincode_scores[pk]
-            final_scores[tid] = score
-
-    elif query_keywords:
-        # Only query: rank by tuition field score
-        final_scores = tuition_scores
-
-    else:
-        # Only location: all tuitions in matched pincodes, scored by pincode similarity
-        if not pincode_scores:
-            return [], 0
-        pincode_tuitions = Tuitions.objects.filter(
-            status=True, pincode__Pincode__in=list(pincode_scores.keys())
-        ).values_list('id', 'pincode__Pincode')
-        final_scores = {}
-        for tid, pk in pincode_tuitions:
-            final_scores[tid] = pincode_scores.get(pk, 0)
-
-    if not final_scores:
+    # If no keywords, return empty
+    if not trigram_exprs:
         return [], 0
 
-    # Step 4: Sort by relevance score descending
-    sorted_ids = sorted(final_scores.keys(), key=lambda tid: final_scores[tid], reverse=True)
 
-    # Step 5: Paginate
+    # --- Step 2: Annotate with max similarity (lower threshold) ---
+    from django.db.models import F
+    tuition_qs = Tuitions.objects.filter(tuition_q).annotate(
+        sim=Greatest(*trigram_exprs, output_field=FloatField())
+    ).filter(sim__gte=0.2)
+
+    # --- Step 2b: Add icontains fallback for locality ---
+    if location_keywords:
+        icontains_q = Q()
+        for word in location_keywords:
+            icontains_q |= Q(locality__icontains=word)
+        fallback_qs = Tuitions.objects.filter(tuition_q & icontains_q)
+        tuition_qs = tuition_qs | fallback_qs
+        tuition_qs = tuition_qs.distinct()
+
+    # --- Step 3: If location keywords, boost tuitions with matching pincodes ---
+    pincode_scores = {}
+    if location_keywords:
+        # Batch all location keywords for pincodes
+        pincode_q = Q()
+        for word in location_keywords:
+            pincode_q |= Q(District__icontains=word) | Q(Devision__icontains=word) | Q(State__icontains=word) | Q(Taluk__icontains=word) | Q(Region__icontains=word)
+        matched_pincodes = pincodes.objects.filter(pincode_q).values_list('Pincode', flat=True)
+        # Optionally, you can also use trigram similarity for pincodes if needed
+        # But for speed, icontains is faster
+        tuition_qs = tuition_qs.annotate(
+            pincode_match=Q(pincode__Pincode__in=list(matched_pincodes))
+        )
+
+    # --- Step 4: Sort by similarity and posted_date ---
+    tuition_qs = tuition_qs.order_by('-sim', '-posted_date', '-id')
+
+    # --- Step 5: Paginate ---
     page_size = 20
-    total_pages = (len(sorted_ids) + page_size - 1) // page_size
-    if pageNumber > total_pages:
-        logger.warning("searchTuition: Page %s exceeds total %s", pageNumber, total_pages)
-        return [], total_pages
-
-    start = (pageNumber - 1) * page_size
-    end = start + page_size
-    page_ids = sorted_ids[start:end]
-
-    tuitions_map = {t.id: t for t in Tuitions.objects.filter(id__in=page_ids).select_related('pincode')}
-    tuitions = [tuitions_map[tid] for tid in page_ids if tid in tuitions_map]
-
-    logger.info("searchTuition: Returning page %s of %s, total=%s", pageNumber, total_pages, len(sorted_ids))
-    return tuitions, total_pages
+    paginator = Paginator(tuition_qs, page_size)
+    page = paginator.get_page(pageNumber)
+    logger.info("searchTuition: Returning page %s of %s, total=%s", pageNumber, paginator.num_pages, paginator.count)
+    return list(page), paginator.num_pages
 
 
 def getDetails(tuitionId):
