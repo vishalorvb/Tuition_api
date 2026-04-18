@@ -134,83 +134,110 @@ def searchTeacher(query_keywords, location_keywords, pageNumber):
     if not query_keywords and not location_keywords:
         return [], 0
 
-    # Step 1: Search location keywords against pincode fields
+    # Step 1: Location search — pincode fields + teacher.location (single query each)
     pincode_scores = {}
+    location_teacher_scores = {}
     if location_keywords:
-        for word in location_keywords:
-            pincode_hits = pincodes.objects.annotate(
-                sim=Greatest(
-                    TrigramSimilarity('District', word),
-                    TrigramSimilarity('Devision', word),
-                    TrigramSimilarity('State', word),
-                    TrigramSimilarity('Taluk', word),
-                    TrigramSimilarity('Region', word),
-                    output_field=FloatField(),
-                )
-            ).filter(sim__gte=0.3).values_list('Pincode', 'sim')
-            for pk, sim in pincode_hits:
-                pincode_scores[pk] = max(pincode_scores.get(pk, 0), sim)
-        logger.info("searchTeacher: Matched %s pincodes", len(pincode_scores))
+        # Build one annotated query for all location words against pincodes
+        annotations = {}
+        for i, word in enumerate(location_keywords):
+            annotations[f's{i}'] = Greatest(
+                TrigramSimilarity('District', word),
+                TrigramSimilarity('Devision', word),
+                TrigramSimilarity('State', word),
+                TrigramSimilarity('Taluk', word),
+                TrigramSimilarity('Region', word),
+                output_field=FloatField(),
+            )
+        filter_q = Q()
+        for key in annotations:
+            filter_q |= Q(**{f'{key}__gte': 0.3})
+        for row in pincodes.objects.annotate(**annotations).filter(filter_q).values_list('Pincode', *annotations.keys()):
+            pk = row[0]
+            best = max(row[1:])
+            pincode_scores[pk] = max(pincode_scores.get(pk, 0), best)
 
-    # Step 2: Search query keywords against teacher fields
+        # Single query for teacher.location match across all words
+        loc_annotations = {}
+        for i, word in enumerate(location_keywords):
+            loc_annotations[f'ls{i}'] = TrigramSimilarity('location', word)
+        loc_filter_q = Q()
+        for key in loc_annotations:
+            loc_filter_q |= Q(**{f'{key}__gte': 0.3})
+        for row in Teacher.objects.annotate(**loc_annotations).filter(loc_filter_q).values_list('id', *loc_annotations.keys()):
+            tid = row[0]
+            best = max(row[1:])
+            location_teacher_scores[tid] = max(location_teacher_scores.get(tid, 0), best)
+
+        logger.info("searchTeacher: Matched %s pincodes, %s teachers by location", len(pincode_scores), len(location_teacher_scores))
+
+    # Step 2: Query search — teacher fields (single query for all words)
     teacher_scores = {}
     if query_keywords:
-        for word in query_keywords:
-            teacher_hits = Teacher.objects.filter(status=True).annotate(
-                sim=Greatest(
-                    TrigramSimilarity('subject', word),
-                    TrigramSimilarity('classes', word),
-                    TrigramSimilarity('location', word),
-                    TrigramSimilarity('qualification', word),
-                    output_field=FloatField(),
-                )
-            ).filter(sim__gte=0.3).values_list('id', 'sim')
-            for tid, sim in teacher_hits:
-                teacher_scores[tid] = max(teacher_scores.get(tid, 0), sim)
+        q_annotations = {}
+        for i, word in enumerate(query_keywords):
+            q_annotations[f'qs{i}'] = Greatest(
+                TrigramSimilarity('subject', word),
+                TrigramSimilarity('classes', word),
+                TrigramSimilarity('location', word),
+                TrigramSimilarity('qualification', word),
+                output_field=FloatField(),
+            )
+        q_filter = Q()
+        for key in q_annotations:
+            q_filter |= Q(**{f'{key}__gte': 0.3})
+        for row in Teacher.objects.annotate(**q_annotations).filter(q_filter).values_list('id', *q_annotations.keys()):
+            tid = row[0]
+            best = max(row[1:])
+            teacher_scores[tid] = max(teacher_scores.get(tid, 0), best)
         logger.info("searchTeacher: Matched %s teachers by query", len(teacher_scores))
 
     # Step 3: Combine results
     if query_keywords and location_keywords:
-        if not pincode_scores or not teacher_scores:
+        if not pincode_scores and not location_teacher_scores:
             return [], 0
-        pincode_teacher_ids = set(
-            Teacher.objects.filter(status=True, pincode__Pincode__in=list(pincode_scores.keys()))
-            .values_list('id', flat=True)
-        )
-        matching_ids = set(teacher_scores.keys()) & pincode_teacher_ids
+        if not teacher_scores:
+            return [], 0
+
+        pincode_teacher_map = {}
+        if pincode_scores:
+            for tid, pk in Teacher.objects.filter(pincode__Pincode__in=list(pincode_scores.keys())).values_list('id', 'pincode__Pincode'):
+                pincode_teacher_map[tid] = pk
+
+        location_matched_ids = set(pincode_teacher_map.keys()) | set(location_teacher_scores.keys())
+        matching_ids = set(teacher_scores.keys()) & location_matched_ids
         if not matching_ids:
             return [], 0
 
         final_scores = {}
-        pincode_map = dict(
-            Teacher.objects.filter(id__in=matching_ids)
-            .values_list('id', 'pincode__Pincode')
-        )
         for tid in matching_ids:
             score = teacher_scores.get(tid, 0)
-            pk = pincode_map.get(tid)
+            pk = pincode_teacher_map.get(tid)
             if pk and pk in pincode_scores:
                 score += pincode_scores[pk]
+            if tid in location_teacher_scores:
+                score += location_teacher_scores[tid]
             final_scores[tid] = score
 
     elif query_keywords:
         final_scores = teacher_scores
 
     else:
-        if not pincode_scores:
-            return [], 0
-        pincode_teachers = Teacher.objects.filter(
-            status=True, pincode__Pincode__in=list(pincode_scores.keys())
-        ).values_list('id', 'pincode__Pincode')
         final_scores = {}
-        for tid, pk in pincode_teachers:
-            final_scores[tid] = pincode_scores.get(pk, 0)
+        if pincode_scores:
+            for tid, pk in Teacher.objects.filter(pincode__Pincode__in=list(pincode_scores.keys())).values_list('id', 'pincode__Pincode'):
+                final_scores[tid] = pincode_scores.get(pk, 0)
+        for tid, sim in location_teacher_scores.items():
+            final_scores[tid] = max(final_scores.get(tid, 0), sim)
 
     if not final_scores:
         return [], 0
 
-    # Step 4: Sort by relevance score descending
-    sorted_ids = sorted(final_scores.keys(), key=lambda tid: final_scores[tid], reverse=True)
+    # Fetch join_date for sorting
+    date_map = dict(Teacher.objects.filter(id__in=final_scores.keys()).values_list('id', 'join_date'))
+
+    # Step 4: Sort by relevance score desc, then join_date desc (newest first)
+    sorted_ids = sorted(final_scores.keys(), key=lambda tid: (final_scores[tid], date_map.get(tid)), reverse=True)
 
     # Step 5: Paginate
     page_size = 20
