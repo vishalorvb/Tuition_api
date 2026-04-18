@@ -49,9 +49,11 @@ def searchTuition(query_keywords, location_keywords, pageNumber):
     if not query_keywords and not location_keywords:
         return [], 0
 
-    # --- Step 1: Build Q objects for all keywords ---
+
+    # --- Step 1: Build Q objects for all keywords (OR logic for any word match) ---
     tuition_q = Q(status=True)
     trigram_exprs = []
+    or_q = Q()
 
     # For query keywords (subject, course, locality)
     if query_keywords:
@@ -59,31 +61,32 @@ def searchTuition(query_keywords, location_keywords, pageNumber):
             trigram_exprs.append(TrigramSimilarity('subject', word))
             trigram_exprs.append(TrigramSimilarity('course', word))
             trigram_exprs.append(TrigramSimilarity('locality', word))
+            or_q |= Q(subject__icontains=word)
+            or_q |= Q(course__icontains=word)
+            or_q |= Q(locality__icontains=word)
 
     # For location keywords (locality field only)
     if location_keywords:
         for word in location_keywords:
             trigram_exprs.append(TrigramSimilarity('locality', word))
+            or_q |= Q(locality__icontains=word)
 
     # If no keywords, return empty
-    if not trigram_exprs:
+    if not trigram_exprs and not or_q:
         return [], 0
 
 
-    # --- Step 2: Annotate with max similarity (lower threshold) ---
     from django.db.models import F
-    tuition_qs = Tuitions.objects.filter(tuition_q).annotate(
+    # Trigram similarity queryset
+    trigram_qs = Tuitions.objects.filter(tuition_q).annotate(
         sim=Greatest(*trigram_exprs, output_field=FloatField())
-    ).filter(sim__gte=0.2)
+    ).filter(sim__gte=0.2) if trigram_exprs else Tuitions.objects.none()
 
-    # --- Step 2b: Add icontains fallback for locality ---
-    if location_keywords:
-        icontains_q = Q()
-        for word in location_keywords:
-            icontains_q |= Q(locality__icontains=word)
-        fallback_qs = Tuitions.objects.filter(tuition_q & icontains_q)
-        tuition_qs = tuition_qs | fallback_qs
-        tuition_qs = tuition_qs.distinct()
+    # OR Q fallback queryset (any word matches any field)
+    or_fallback_qs = Tuitions.objects.filter(tuition_q & or_q) if or_q else Tuitions.objects.none()
+
+    # Combine both querysets and remove duplicates
+    tuition_qs = (trigram_qs | or_fallback_qs).distinct()
 
     # --- Step 3: If location keywords, boost tuitions with matching pincodes ---
     pincode_scores = {}
